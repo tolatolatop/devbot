@@ -7,7 +7,7 @@ jobs:
   include:
     # 主分支合并流程
     - name: "Master Branch"
-      if: branch = master
+      if: type = push AND branch = master
       script:
         - make test
 
