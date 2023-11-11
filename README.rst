@@ -6,8 +6,8 @@ devbot
 .. image:: https://img.shields.io/pypi/v/devbot.svg
         :target: https://pypi.python.org/pypi/devbot
 
-.. image:: https://img.shields.io/travis/tolatolatop/devbot.svg
-        :target: https://app.travis-ci.com/tolatolatop/devbot.svg?branch=master
+.. image:: https://app.travis-ci.com/tolatolatop/devbot.svg?branch=master
+        :target: https://app.travis-ci.com/github/tolatolatop/devbot?serverType=git
 
 .. image:: https://readthedocs.org/projects/devbot/badge/?version=latest
         :target: https://devbot.readthedocs.io/en/latest/?version=latest
