@@ -42,11 +42,17 @@ class IssueEvent(AciontPayload):
 
 
 @dataclass
+class Pusher:
+    name: str
+    email: str
+
+
+@dataclass
 class PushEvent(WebhookPayload):
     ref: str
     before: str
     after: str
-    pusher: User
+    pusher: Pusher
 
 
 @dataclass
