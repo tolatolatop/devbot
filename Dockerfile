@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt --progress-bar off
 
 COPY devbot .
 
-CMD ['uvicorn', 'devbot:app', '--host', '0.0.0.0', '--port', '80']
+CMD ['uvicorn', 'devbot:app', '--host', '0.0.0.0', '--port', '80', '--log-config=devbot/log_conf.yaml']
