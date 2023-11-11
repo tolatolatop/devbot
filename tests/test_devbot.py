@@ -50,7 +50,9 @@ def test_all_endpoints_have_tests():
     endpoints.append("/redoc")
 
     # 获取所有的接口路径和方法
-    routes = [route.path for route in devbot.app.routes if hasattr(route, "methods")]
+    routes = [
+        route.path for route in devbot.app.routes if hasattr(route, "methods")
+    ]
 
     # 断言每个接口路径是否出现在测试方法中
     for route in routes:
