@@ -17,6 +17,7 @@ jobs:
     - name: "Master Branch"
       if: branch = master
       script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - "docker build -t devbot ."
         # 在镜像中运行make test命令
         - docker run devbot make test
@@ -25,6 +26,7 @@ jobs:
     - name: "Pull Request Checks"
       if: type = pull_request AND branch = master
       script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - "docker build -t devbot ."
         # 在镜像中运行make lint test命令
         - docker run devbot make lint test
