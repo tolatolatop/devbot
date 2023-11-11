@@ -13,10 +13,12 @@ jobs:
     - name: "Master Branch"
       if: type = push AND branch = master
       script:
+        - poetry install --no-root
         - poetry run make test
 
     # 合并请求检查流程
     - name: "Pull Request Checks"
       if: type = pull_request AND branch = master
       script:
+        - poetry install
         - poetry run make lint test
