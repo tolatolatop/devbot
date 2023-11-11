@@ -28,7 +28,6 @@ webhook_test_data = [
         "hook_id": 123456,
     },
     {
-        "action": "pushed",
         "repository": {
             "full_name": "username/repository",
             "name": "repository",
@@ -38,6 +37,6 @@ webhook_test_data = [
         "ref": "refs/heads/main",
         "before": "abcdef12345",
         "after": "12345abcdef",
-        "pusher": {"login": "username"},
+        "pusher": {"name": "username", "email": "username@email.com"},
     },
 ]
