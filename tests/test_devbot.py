@@ -3,6 +3,7 @@
 """Tests for `devbot` package."""
 
 import pytest
+from .data.repo import webhook_test_data
 
 
 @pytest.fixture
@@ -27,19 +28,9 @@ def test_healthz(client):
     assert response.json() == {"message": "OK"}
 
 
-def test_webhook_github(client):
-    ping = {
-        "action": "open",
-        "repository": {},
-        "sender": {},
-        "hook": {},
-        "hook_id": 1,
-    }
-    response = client.post("/webhook/github", json=ping)
-    assert response.status_code == 200
-
-    issue = {"action": "open", "repository": {}, "sender": {}, "issue": {}}
-    response = client.post("/webhook/github", json=issue)
+@pytest.mark.parametrize("data", webhook_test_data)
+def test_webhook_github(client, data):
+    response = client.post("/webhook/github", json=data)
     assert response.status_code == 200
 
 
