@@ -2,6 +2,10 @@ language: python
 python:
   - "3.9"
 
+pre-install:
+  - "pip install pipx"
+  - "pipx install poetry"
+
 # 定义不同的工作流程
 jobs:
   include:
@@ -9,10 +13,10 @@ jobs:
     - name: "Master Branch"
       if: type = push AND branch = master
       script:
-        - make test
+        - poetry run make test
 
     # 合并请求检查流程
     - name: "Pull Request Checks"
       if: type = pull_request AND branch = master
       script:
-        - make lint test
+        - poetry run make lint test
