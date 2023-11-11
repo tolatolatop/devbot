@@ -27,6 +27,22 @@ def test_healthz(client):
     assert response.json() == {"message": "OK"}
 
 
+def test_webhook_github(client):
+    ping = {
+        "action": "open",
+        "repository": {},
+        "sender": {},
+        "hook": {},
+        "hook_id": 1,
+    }
+    response = client.post("/webhook/github", json=ping)
+    assert response.status_code == 200
+
+    issue = {"action": "open", "repository": {}, "sender": {}, "issue": {}}
+    response = client.post("/webhook/github", json=issue)
+    assert response.status_code == 200
+
+
 def test_all_endpoints_have_tests():
     from devbot import devbot
 
@@ -38,7 +54,7 @@ def test_all_endpoints_have_tests():
     ]
 
     endpoints = [
-        method.replace("test_", "")
+        method.replace("test_", "").replace("_", "/")
         for method in test_methods
         if method != "test_all_endpoints_have_tests"
     ]
