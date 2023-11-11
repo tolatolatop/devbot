@@ -5,20 +5,22 @@
 import pytest
 
 
-from devbot import devbot
-
+@pytest.fixture
+def client():
+    from devbot import devbot
+    from fastapi.testclient import TestClient
+    return TestClient(devbot.app)
 
 @pytest.fixture
-def response():
+def response(client):
     """Sample pytest fixture.
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
+    return client.get("/")
 
 
-def test_content(response):
+def test_root(response):
     """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
+    assert response.status_code == 200
+    assert response.json() == {"message": "Hello World"}
