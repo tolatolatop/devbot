@@ -9,7 +9,9 @@ import pytest
 def client():
     from devbot import devbot
     from fastapi.testclient import TestClient
+
     return TestClient(devbot.app)
+
 
 @pytest.fixture
 def response(client):
