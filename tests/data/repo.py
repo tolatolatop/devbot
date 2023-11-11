@@ -14,11 +14,10 @@ webhook_test_data = [
             "title": "Example Issue",
             "labels": ["bug"],
             "state": "open",
-            "comments": "This is an example issue.",
+            "comments": 1,
         },
     },
     {
-        "action": "ping",
         "repository": {
             "full_name": "username/repository",
             "name": "repository",

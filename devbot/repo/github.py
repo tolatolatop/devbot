@@ -16,9 +16,13 @@ class Repository:
 
 @dataclass
 class WebhookPayload:
-    action: str
     repository: Repository
     sender: User
+
+
+@dataclass
+class AciontPayload(WebhookPayload):
+    action: str
 
 
 @dataclass
@@ -29,11 +33,11 @@ class Issue:
     title: str
     labels: List
     state: str
-    comments: str
+    comments: int
 
 
 @dataclass
-class IssueEvent(WebhookPayload):
+class IssueEvent(AciontPayload):
     issue: Issue
 
 
