@@ -7,7 +7,7 @@ devbot
         :target: https://pypi.python.org/pypi/devbot
 
 .. image:: https://img.shields.io/travis/tolatolatop/devbot.svg
-        :target: https://travis-ci.com/tolatolatop/devbot
+        :target: https://app.travis-ci.com/tolatolatop/devbot.svg?branch=master
 
 .. image:: https://readthedocs.org/projects/devbot/badge/?version=latest
         :target: https://devbot.readthedocs.io/en/latest/?version=latest
