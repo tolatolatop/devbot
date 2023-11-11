@@ -2,7 +2,7 @@ language: python
 python:
   - "3.9"
 
-pre-install:
+install:
   - "pip install pipx"
   - "pipx install poetry"
 
