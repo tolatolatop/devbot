@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "devbot"
+version = "0.1.0"
+description = ""
+authors = ["tolatolatop <tolatolatop@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
+
+
+[tool.poetry.group.dev.dependencies]
+wheel = "^0.41.3"
+watchdog = "^3.0.0"
+flake8 = "^6.1.0"
+tox = "^4.11.3"
+coverage = "^7.3.2"
+sphinx = "^7.2.6"
+twine = "^4.0.2"
+pytest = "^7.4.3"
+black = "^23.11.0"
+httpx = "^0.25.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
