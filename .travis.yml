@@ -1,14 +1,6 @@
 language: python
-
-# 指定使用Docker服务
-services:
-  - docker
-
-install:
-  - 'echo nothing'
-
-script:
-  - 'echo nothing'
+python:
+  - "3.9"
 
 # 定义不同的工作流程
 jobs:
@@ -17,16 +9,10 @@ jobs:
     - name: "Master Branch"
       if: branch = master
       script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - "docker build -t devbot ."
-        # 在镜像中运行make test命令
-        - docker run devbot make test
+        - make test
 
     # 合并请求检查流程
     - name: "Pull Request Checks"
       if: type = pull_request AND branch = master
       script:
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - "docker build -t devbot ."
-        # 在镜像中运行make lint test命令
-        - docker run devbot make lint test
+        - make lint test
