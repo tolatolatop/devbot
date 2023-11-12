@@ -58,7 +58,27 @@ def create_filesystem_tools(root_path):
         )
         return err_msg
 
-    return [list_files, read_files]
+    @tool
+    def run_make_cmd(target: str, Callbacks=None):
+        """run make command like: make ${target}"""
+        cmd = f"make {target}"
+        p = sp.Popen(
+            cmd,
+            cwd=root_path,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            shell=True,
+        )
+        stdout, stderr = p.communicate()
+        text = (
+            f"# {cmd}\n"
+            f"stdout:\n{stdout.decode()}"
+            "\n----\n"
+            f"stderr:\n{stderr.decode()}"
+        )
+        return text
+
+    return [list_files, read_files, run_make_cmd]
 
 
 def prepare_env(repo_url: str, repo_name: str, commit_id: str = "master"):
