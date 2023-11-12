@@ -41,5 +41,5 @@ agent = (
 agent_executor = AgentExecutor(agent=agent, tools=tools)
 
 agent_executor.invoke(
-    {"input": "Explain all environment variables that need to be set."}
+    {"input": "Summarize the results of the make test command"}
 )
