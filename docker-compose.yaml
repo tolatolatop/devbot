@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  devbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deploy
+    command: poetry run uvicorn devbot.devbot:app --host 0.0.0.0 --log-config=devbot/log_conf.yaml
+    env_file:
+      - .env
+
+  smee-client:
+    image: deltaprojects/smee-client
+    entrypoint: sh /app/start_smee.sh
+    volumes:
+      - ./start_smee.sh:/app/start_smee.sh:ro
+    env_file:
+      - .env
