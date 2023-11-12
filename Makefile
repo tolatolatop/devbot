@@ -1,4 +1,5 @@
 .PHONY: clean clean-build clean-pyc clean-test coverage dist docs help install lint lint/flake8 lint/black
+.PHONY: build-docker deploy-docker test-docker test-in-docker
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -22,6 +23,8 @@ endef
 export PRINT_HELP_PYSCRIPT
 
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
+IMAGE_NAME := devbot
+DEPLOY_PORT := 8080
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -87,3 +90,15 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+build-docker: ## build a docker image
+	docker build -t ${IMAGE_NAME} --target deploy . 
+
+deploy-docker: build-docker ## run in docker image
+	docker run -itd -p ${DEPLOY_PORT}:80 --name ${IMAGE_NAME} ${IMAGE_NAME}
+
+test-docker:
+	docker build -t tests/${IMAGE_NAME} --target dev . 
+
+test-in-docker: test-docker
+	docker run -it --rm --name test_${IMAGE_NAME} tests/${IMAGE_NAME} poetry run make test
