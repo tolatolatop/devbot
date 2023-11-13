@@ -117,7 +117,7 @@ def create_issue_chat_history(g: Github, repo_name: str, issue_number: int):
         else:
             msg = HumanMessage(content=c.body)
         chat_history.append(msg)
-    return chat_history[-1], chat_history
+    return chat_history
 
 
 if __name__ == "__main__":
