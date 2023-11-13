@@ -22,5 +22,6 @@ coding_prompt = ChatPromptTemplate.from_messages(
         ),
         ("user", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
+        MessagesPlaceholder(variable_name="chat_history"),
     ]
 )
