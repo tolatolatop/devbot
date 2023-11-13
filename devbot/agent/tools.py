@@ -88,7 +88,7 @@ def prepare_env(repo_url: str, repo_name: str, commit_id: str = "master"):
     local_dir = f"./.agent_cache/{repo_name}@{commit_id}"
     if os.path.isdir(local_dir):
         repo = Repo(local_dir)
-        repo.active_branch.checkout(True)
+        repo.remotes.origin.pull()
     else:
         repo = Repo.clone_from(repo_url, local_dir)
     return local_dir
