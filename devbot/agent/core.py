@@ -18,9 +18,7 @@ def create_agent_executor(
     auth = Auth.Token(os.environ["GITHUB_TOKEN"])
     g = Github(auth=auth)
     root_path = tools.prepare_env(repo_url, repo_name, commit_id)
-    input, chat_history = tools.create_issue_chat_history(
-        g, repo_name, issue_number
-    )
+    chat_history = tools.create_issue_chat_history(g, repo_name, issue_number)
     tools_list = tools.create_filesystem_tools(root_path) + []
     use_prompt = prompts.coding_prompt
 
@@ -35,7 +33,8 @@ def create_agent_executor(
             "agent_scratchpad": lambda x: format_to_openai_functions(
                 x["intermediate_steps"]
             ),
-            "chat_history": lambda x: x.get("chat_history") or chat_history,
+            "chat_history": lambda x: x.get("chat_history")
+            or chat_history[:-1],
         }
         | use_prompt
         | llm_with_tools
@@ -43,7 +42,7 @@ def create_agent_executor(
     ).with_config(run_name="Agent")
 
     agent_executor = AgentExecutor(agent=agent, tools=tools_list)
-    resp = agent_executor.invoke({"input": input.content})
+    agent_executor.invoke({"input": chat_history[-1].content})
     return agent_executor
 
 

@@ -20,8 +20,8 @@ coding_prompt = ChatPromptTemplate.from_messages(
             "You are allowed to use tools to view "
             "the repository and specific files",
         ),
+        MessagesPlaceholder(variable_name="chat_history"),
         ("user", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
-        MessagesPlaceholder(variable_name="chat_history"),
     ]
 )
