@@ -1,14 +1,17 @@
 import uuid
 import os
 import subprocess as sp
-from git import Repo
 
+from git import Repo
+from github import Github
+from github import Auth
 import requests
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.tools import tool
+from langchain.schema.messages import HumanMessage, AIMessage
 
 
 @tool
@@ -89,3 +92,38 @@ def prepare_env(repo_url: str, repo_name: str, commit_id: str = "master"):
     else:
         repo = Repo.clone_from(repo_url, local_dir)
     return local_dir
+
+
+def comment_issue(g: Github, repo_name, issue_number, comment):
+    repo = g.get_repo(repo_name)
+    issue = repo.get_issue(number=issue_number)
+    res = issue.create_comment(comment)
+    return res
+
+
+def create_issue_chat_history(g: Github, repo_name: str, issue_number: int):
+    repo = g.get_repo(repo_name)
+    ai_user = g.get_user().login
+    issue = repo.get_issue(number=issue_number)
+    chat_history = []
+    if issue.user == ai_user:
+        msg = AIMessage(content=issue.body)
+    else:
+        msg = HumanMessage(content=issue.body)
+    chat_history.append(msg)
+    for c in issue.get_comments():
+        if c.user.login == ai_user:
+            msg = AIMessage(content=c.body)
+        else:
+            msg = HumanMessage(content=c.body)
+        chat_history.append(msg)
+    return chat_history[-1], chat_history
+
+
+if __name__ == "__main__":
+    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
+    g = Github(auth=auth)
+    repo_name = "tolatolatop/devbot"
+    issue_number = 5
+    res = create_issue_chat_history(g, repo_name, issue_number)
+    print(res)
