@@ -92,8 +92,11 @@ if __name__ == "__main__":
     prompt, tools_list, chat_history = prepare_coding_agent(root_path)
     ae = create_coding_agent_executor(prompt, tools_list, chat_history)
     task = """
-devbot/agent/tools.py:16:1: F401 'prompts' imported but unused
-devbot/agent/tools.py:97:5: F841 local variable 'root_dir' is assigned to but never used
+devbot/agent/bug_test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+devbot/agent/bug_test.py:16:4: W0612: Unused variable 'root_dir' (unused-variable)
+devbot/agent/bug_test.py:26:0: C0116: Missing function or method docstring (missing-function-docstring)
+devbot/agent/bug_test.py:63:4: C0103: Constant name "issue_number" doesn't conform to UPPER_CASE naming style (invalid-name)
+devbot/agent/bug_test.py:64:43: E1120: No value for argument 'issue_number' in function call (no-value-for-parameter)
 """
     resp = ae.invoke({"input": "Please fix the following issues." + task})
     print(resp["output"])

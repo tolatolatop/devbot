@@ -35,8 +35,8 @@ coding_prompt = ChatPromptTemplate.from_messages(
             "Submit tasks to the repo by function commit_task."
             "If you have not submitted a PR before, please submit a PR through create_pull_request.",
         ),
-        MessagesPlaceholder(variable_name="chat_history"),
         ("user", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
+        MessagesPlaceholder(variable_name="chat_history"),
     ]
 )
