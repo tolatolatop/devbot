@@ -18,7 +18,7 @@ def prepare_coding_agent(repo_name, repo_url, commit_id, issue_number):
     root_path = tools.prepare_env(repo_url, repo_name, commit_id)
     chat_history = tools.create_issue_chat_history(g, repo_name, issue_number)
     tools_list = tools.create_filesystem_tools(root_path) + []
-    prompt = prompts.coding_prompt
+    prompt = prompts.issue_prompt
     return prompt, tools_list, chat_history
 
 
@@ -47,6 +47,7 @@ def create_agent_executor(use_prompt, tools_list, chat_history):
 
 def run_agent_executor(input: str, agent_executor):
     resp = agent_executor.invoke({"input": input})
+    tools.comment_issue_by_github(resp["output"])
     return resp["output"]
 
 
@@ -64,4 +65,3 @@ if __name__ == "__main__":
     )
     ae = create_agent_executor(use_prompt, tools_list, chat_history[:-1])
     resp = run_agent_executor(chat_history[-1].content, ae)
-    print(resp)
