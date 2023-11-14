@@ -12,7 +12,6 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.tools import tool
 from langchain.schema.messages import HumanMessage, AIMessage
-from devbot.agent.agent_tools import create_agent_executor
 
 import prompts
 
