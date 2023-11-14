@@ -13,8 +13,6 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.tools import tool
 from langchain.schema.messages import HumanMessage, AIMessage
 
-import prompts
-
 
 @tool
 def summarize_tool(url: str, callbacks: Callbacks = None):
@@ -94,12 +92,10 @@ def comment_issue_by_github(g: Github, repo_name, issue_number, comment):
 
 
 def create_github_tools(g: Github, repo_url, repo_name, issue_number):
-    root_dir = prepare_env(repo_url, repo_name)
-
     @tool
     def comment_issue(comment, Callbacks=None):
         """comment issue"""
-        res = comment_issue_by_github(g, repo_name, issue_number)
+        res = comment_issue_by_github(g, repo_name, issue_number, comment)
         return res
 
     return [comment_issue]
