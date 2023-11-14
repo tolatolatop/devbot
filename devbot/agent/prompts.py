@@ -30,10 +30,10 @@ coding_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a very good python engineer. Please complete the following actions according to user needs."
-            "Modify files according to the task to complete the task."
-            "Submit tasks to the warehouse through tools."
-            "If you have not submitted a PR before, please submit a PR through the tool.",
+            "You are a very good python engineer. Please complete user needs by following actions."
+            "Modify files to complete the task by update_file function."
+            "Submit tasks to the repo by function commit_task."
+            "If you have not submitted a PR before, please submit a PR through create_pull_request.",
         ),
         MessagesPlaceholder(variable_name="chat_history"),
         ("user", "{input}"),
