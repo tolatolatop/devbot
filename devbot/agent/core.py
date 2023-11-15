@@ -9,6 +9,7 @@ from github import Github
 from github import Auth
 
 from devbot.agent import tools
+from devbot.agent import agent_tools
 from devbot.agent import prompts
 
 
@@ -17,7 +18,9 @@ def prepare_coding_agent(repo_name, repo_url, commit_id, issue_number):
     g = Github(auth=auth)
     root_path = tools.prepare_env(repo_url, repo_name, commit_id)
     chat_history = tools.create_issue_chat_history(g, repo_name, issue_number)
-    tools_list = tools.create_filesystem_tools(root_path) + []
+    tools_list = tools.create_filesystem_tools(
+        root_path
+    ) + agent_tools.create_coding_task_tools(root_path)
     prompt = prompts.issue_prompt
     return prompt, tools_list, chat_history
 
