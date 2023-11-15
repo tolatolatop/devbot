@@ -22,7 +22,7 @@ def prepare_coding_agent(root_path):
 
 
 def create_coding_agent_executor(use_prompt, tools_list, chat_history):
-    llm = ChatOpenAI(temperature=0)
+    llm = ChatOpenAI(model="gpt-4", temperature=0)
     llm_with_tools = llm.bind(
         functions=[format_tool_to_openai_function(t) for t in tools_list]
     )
@@ -47,7 +47,7 @@ def create_coding_agent_executor(use_prompt, tools_list, chat_history):
 def create_coding_tools(root_path):
     @tool
     def update_file(file_path: str, content: str):
-        """Modify file content.Must input new content in one line"""
+        """Modify file content. Make sure your input new content in one line"""
         repo = Repo(root_path)
 
         r_file_path = os.path.join(root_path, file_path)
@@ -68,9 +68,13 @@ def create_coding_tools(root_path):
     def create_pull_request(pr_title: str, pr_body: str):
         """Create a pull request"""
         repo = Repo(root_path)
+        repo.git.execute(["git", "checkout", "-b", "dev"])
+        repo.git.execute(["git", "push", "--set-upstream", "origin", "dev"])
         repo.git.execute(
             ["gh", "pr", "create", "--title", pr_title, "--body", pr_body]
         )
+        repo.git.execute(["git", "checkout", "master"])
+        repo.git.execute(["git", "branch", "-D", "dev"])
         return "create pr ok!"
 
     return [update_file, commit_task, create_pull_request]
