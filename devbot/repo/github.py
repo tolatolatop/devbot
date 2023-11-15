@@ -12,6 +12,7 @@ class Repository:
     full_name: str
     name: str
     owner: User
+    clone_url: str
 
 
 @dataclass
@@ -40,7 +41,6 @@ class Issue:
 @dataclass
 class IssueEvent(AciontPayload):
     issue: Issue
-    clone_url: str
 
 
 @dataclass
