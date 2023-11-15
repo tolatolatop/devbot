@@ -59,7 +59,7 @@ def replay_issue(repo_name, repo_url, commit_id, issue_number):
     ae = create_agent_executor(use_prompt, tools_list, chat_history[:-1])
     comment = run_agent_executor(chat_history[-1].content, ae)
     tools.comment_issue_by_github(g, repo_name, issue_number, comment)
-    return resp
+    return comment
 
 
 if __name__ == "__main__":
