@@ -5,6 +5,7 @@ webhook_test_data = [
             "full_name": "username/repository",
             "name": "repository",
             "owner": {"login": "username"},
+            "clone_url": "https://github.com/username/repository/",
         },
         "sender": {"login": "username"},
         "issue": {
@@ -17,7 +18,6 @@ webhook_test_data = [
             "comments": 1,
             "number": 1,
         },
-        "clone_url": "https://github.com/username/repository/",
     },
     {
         "repository": {

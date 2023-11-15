@@ -27,7 +27,7 @@ async def webhook_github(
     background_tasks.add_task(
         core.replay_issue,
         event.repository.full_name,
-        event.clone_url,
+        event.repository.clone_url,
         "master",
         event.issue.number,
     )
