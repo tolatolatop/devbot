@@ -6,14 +6,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.tools import tool
 from langchain.agents.format_scratchpad import format_to_openai_functions
 from langchain.tools.render import format_tool_to_openai_function
-from langchain.schema.messages import HumanMessage, AIMessage, FunctionMessage
 
-from github import Github
-from github import Auth
 
 import tools
 import prompts
-from tools import create_filesystem_tools
 
 
 def prepare_coding_agent(root_path):
@@ -66,7 +62,7 @@ def create_coding_tools(root_path):
         """Record changes to the repository"""
         repo = Repo(root_path)
         commit_id = repo.git.commit("-m", commit_message, "-s")
-        return f"commit changes ok!"
+        return f"commit changes ok! {commit_id}"
 
     @tool
     def create_pull_request(pr_title: str, pr_body: str):
@@ -78,7 +74,7 @@ def create_coding_tools(root_path):
         repo.git.execute(
             ["gh", "pr", "create", "--title", pr_title, "--body", pr_body]
         )
-        return f"create pr ok!"
+        return "create pr ok!"
 
     return [update_file, commit_task, create_pull_request]
 
