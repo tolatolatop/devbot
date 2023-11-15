@@ -34,11 +34,13 @@ class Issue:
     labels: List
     state: str
     comments: int
+    number: int
 
 
 @dataclass
 class IssueEvent(AciontPayload):
     issue: Issue
+    clone_url: str
 
 
 @dataclass
