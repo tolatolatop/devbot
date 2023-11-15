@@ -1,10 +1,10 @@
 FROM python:3.9 as base
 
-WORKDIR app
-
-COPY poetry.lock pyproject.toml .
+WORKDIR /app
 
 RUN pip install pipx && pipx install poetry && ln -s /root/.local/bin/poetry /usr/local/bin
+
+COPY poetry.lock pyproject.toml ./
 
 FROM base as deploy
 RUN poetry install --only main
