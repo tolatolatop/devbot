@@ -8,8 +8,8 @@ from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from github import Github
 from github import Auth
 
-import tools
-import prompts
+from devbot.agent import tools
+from devbot.agent import prompts
 
 
 def prepare_coding_agent(repo_name, repo_url, commit_id, issue_number):

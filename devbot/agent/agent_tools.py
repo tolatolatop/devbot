@@ -8,8 +8,8 @@ from langchain.agents.format_scratchpad import format_to_openai_functions
 from langchain.tools.render import format_tool_to_openai_function
 
 
-import tools
-import prompts
+from devbot.agent import tools
+from devbot.agent import prompts
 
 
 def prepare_coding_agent(root_path):
