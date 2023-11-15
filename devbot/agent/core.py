@@ -47,8 +47,18 @@ def create_agent_executor(use_prompt, tools_list, chat_history):
 
 def run_agent_executor(input: str, agent_executor):
     resp = agent_executor.invoke({"input": input})
-    tools.comment_issue_by_github(resp["output"])
     return resp["output"]
+
+
+def replay_issue(repo_name, repo_url, commit_id, issue_number):
+    use_prompt, tools_list, chat_history = prepare_coding_agent(
+        repo_name, repo_url, commit_id, issue_number
+    )
+    ae = create_agent_executor(use_prompt, tools_list, chat_history[:-1])
+    resp = run_agent_executor(chat_history[-1].content, ae)
+    comment = resp["output"]
+    tools.comment_issue_by_github(g, repo_name, issue_number, comment)
+    return resp
 
 
 if __name__ == "__main__":
