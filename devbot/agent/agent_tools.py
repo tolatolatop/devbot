@@ -76,6 +76,20 @@ def create_coding_tools(root_path):
     return [update_file, commit_task, create_pull_request]
 
 
+def create_coding_task_tools(root_path):
+    @tool
+    def coding(task: str, Callbacks=None):
+        """This tool can be used to complete all programming tasks and submit PRs.
+        If there is a programming task that needs to be completed, enter the task description as the task parameter.
+        """
+        prompt, tools_list, chat_history = prepare_coding_agent(root_path)
+        ae = create_coding_agent_executor(prompt, tools_list, chat_history)
+        resp = ae.invoke({"input": "Please finished following issues." + task})
+        return f"{task} is finished!"
+
+    return [coding]
+
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
