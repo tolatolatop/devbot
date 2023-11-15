@@ -15,7 +15,9 @@ webhook_test_data = [
             "labels": ["bug"],
             "state": "open",
             "comments": 1,
+            "number": 1,
         },
+        "clone_url": "https://github.com/username/repository/",
     },
     {
         "repository": {
