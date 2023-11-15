@@ -10,6 +10,8 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && apt update \
     && apt install gh -y
 
+RUN apt update && apt install docker.io -y
+
 COPY poetry.lock pyproject.toml ./
 
 FROM base as deploy
