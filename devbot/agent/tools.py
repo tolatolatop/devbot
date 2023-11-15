@@ -64,7 +64,7 @@ def create_filesystem_tools(root_path):
     @tool
     def run_make_cmd(target: str, Callbacks=None):
         """run make command like: make ${target}"""
-        cmd = f"make {target}"
+        cmd = f"poetry run make {target}"
         p = sp.Popen(
             cmd,
             cwd=root_path,
