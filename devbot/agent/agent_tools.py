@@ -68,9 +68,6 @@ def create_coding_tools(root_path):
     def create_pull_request(pr_title: str, pr_body: str):
         """Create a pull request"""
         repo = Repo(root_path)
-        pr_title = "Add License"
-        pr_body = "Please merge this PR to add the MIT License."
-        # 缺少token环境
         repo.git.execute(
             ["gh", "pr", "create", "--title", pr_title, "--body", pr_body]
         )
