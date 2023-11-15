@@ -33,7 +33,7 @@ def summarize_tool(url: str, callbacks: Callbacks = None):
     )
 
 
-def create_filesystem_tools(root_path):
+def create_filesystem_tools(root_path: str):
     @tool
     def list_files(callbacks: Callbacks = None):
         """list all files in repo"""
@@ -64,9 +64,10 @@ def create_filesystem_tools(root_path):
     @tool
     def run_make_cmd(target: str, Callbacks=None):
         """run make command like: make ${target}"""
+        docker_run = f"docker run --rm $(docker build -q .)"
         cmd = f"poetry run make {target}"
         p = sp.Popen(
-            cmd,
+            f"{docker_run} {cmd}",
             cwd=root_path,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
