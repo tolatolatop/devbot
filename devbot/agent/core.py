@@ -16,7 +16,7 @@ def prepare_coding_agent(repo_name, repo_url, commit_id, issue_number):
     git_app = Gitee()
     git_app.auth(None, None)
     root_path = tools.prepare_env(repo_url, repo_name, commit_id)
-    chat_history = tools.create_issue_chat_history(g, repo_name, issue_number)
+    chat_history = tools.create_issue_chat_history(git_app, repo_name, issue_number)
     tools_list = tools.create_filesystem_tools(
         root_path
     ) + agent_tools.create_coding_task_tools(root_path)
@@ -60,7 +60,7 @@ def replay_issue(repo_name, repo_url, commit_id, issue_number):
     )
     ae = create_agent_executor(use_prompt, tools_list, chat_history[:-1])
     comment = run_agent_executor(chat_history[-1].content, ae)
-    tools.comment_issue_by_github(g, repo_name, issue_number, comment)
+    tools.comment_issue_by_github(git_app, repo_name, issue_number, comment)
     return comment
 
 

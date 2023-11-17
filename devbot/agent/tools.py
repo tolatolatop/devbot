@@ -135,5 +135,5 @@ if __name__ == "__main__":
     git_app.auth(None, None)
     rn = "tolatolatop/devbot"
     isn = 5
-    res = create_issue_chat_history(g, rn, isn)
+    res = create_issue_chat_history(git_app, rn, isn)
     print(res)
