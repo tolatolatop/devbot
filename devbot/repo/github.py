@@ -28,9 +28,6 @@ class AciontPayload(WebhookPayload):
 
 @dataclass
 class Issue:
-    url: str
-    repository_url: str
-    comments_url: str
     title: str
     labels: List
     state: str
