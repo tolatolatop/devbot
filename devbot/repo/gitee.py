@@ -1,13 +1,8 @@
-import hashlib
-import json
 import os
-from typing import Union, Dict, List
 
 from dataclasses import dataclass
 from requests import Session
 from requests.models import PreparedRequest
-
-import urllib.parse
 
 
 @dataclass
@@ -25,7 +20,6 @@ class IssueData:
 class IssueComment:
     body: str
     user: User
-
 
 
 class OAuth:
@@ -162,7 +156,7 @@ class Issue:
         return self.data['body']
 
     def create_comment(self, body: str):
-        api_path = f'/repos/{self.__repo.repo_name}/issues/{self.__issue_id}/comments'
+        api_path = f'/repos/{self.__repo.full_name}/issues/{self.__issue_id}/comments'
         params = {
             'body': body
         }
