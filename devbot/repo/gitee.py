@@ -139,8 +139,8 @@ class Repo:
     def clone_url(self):
         return self.__data['html_url']
 
-    def get_issue(self, issue_id):
-        api_path = f"/repos/{self.full_name}/issues/{issue_id}"
+    def get_issue(self, number):
+        api_path = f"/repos/{self.full_name}/issues/{number}"
         resp = self.__gitee.requests("GET", api_path)
         return Issue(resp.json(), self, self.__gitee)
 
