@@ -2,8 +2,8 @@ import logging
 import os
 
 from fastapi import FastAPI, BackgroundTasks
-from github import Github
-from github import Auth
+
+from repo.gitee import Gitee
 
 from .repo import github
 from .agent import core
@@ -27,9 +27,9 @@ async def healthz():
 async def webhook_github(
     event: github.IssueEvent, background_tasks: BackgroundTasks
 ):
-    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
-    g = Github(auth=auth)
-    if event.sender.login != g.get_user().login:
+    git_app = Gitee()
+    git_app.auth(None, None)
+    if event.sender.login != git_app.get_user().login:
         background_tasks.add_task(
             core.replay_issue,
             event.repository.full_name,

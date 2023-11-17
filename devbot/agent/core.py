@@ -5,17 +5,16 @@ from langchain.tools.render import format_tool_to_openai_function
 from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_to_openai_functions
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from github import Github
-from github import Auth
 
 from devbot.agent import tools
 from devbot.agent import agent_tools
 from devbot.agent import prompts
+from devbot.repo.gitee import Gitee
 
 
 def prepare_coding_agent(repo_name, repo_url, commit_id, issue_number):
-    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
-    g = Github(auth=auth)
+    git_app = Gitee()
+    git_app.auth(None, None)
     root_path = tools.prepare_env(repo_url, repo_name, commit_id)
     chat_history = tools.create_issue_chat_history(g, repo_name, issue_number)
     tools_list = tools.create_filesystem_tools(
@@ -54,8 +53,8 @@ def run_agent_executor(input: str, agent_executor):
 
 
 def replay_issue(repo_name, repo_url, commit_id, issue_number):
-    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
-    g = Github(auth=auth)
+    git_app = Gitee()
+    git_app.auth(None, None)
     use_prompt, tools_list, chat_history = prepare_coding_agent(
         repo_name, repo_url, commit_id, issue_number
     )

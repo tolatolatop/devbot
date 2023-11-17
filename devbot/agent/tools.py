@@ -3,8 +3,6 @@ import os
 import subprocess as sp
 
 from git import Repo
-from github import Github
-from github import Auth
 import requests
 from langchain.callbacks.manager import Callbacks
 from langchain.chat_models import ChatOpenAI
@@ -13,6 +11,7 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.tools import tool
 from langchain.schema.messages import HumanMessage, AIMessage
 
+from devbot.repo.gitee import Gitee
 
 @tool
 def summarize_tool(url: str, callbacks: Callbacks = None):
@@ -85,14 +84,14 @@ def create_filesystem_tools(root_path: str):
     return [list_files, read_files, run_make_cmd]
 
 
-def comment_issue_by_github(g: Github, repo_name, issue_number, comment):
+def comment_issue_by_github(g: Gitee, repo_name, issue_number, comment):
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(number=issue_number)
     res = issue.create_comment(comment)
     return res
 
 
-def create_github_tools(g: Github, repo_url, repo_name, issue_number):
+def create_github_tools(g: Gitee, repo_url, repo_name, issue_number):
     @tool
     def comment_issue(comment, Callbacks=None):
         """comment issue"""
@@ -112,7 +111,7 @@ def prepare_env(repo_url: str, repo_name: str, commit_id: str = "master"):
     return local_dir
 
 
-def create_issue_chat_history(g: Github, repo_name: str, issue_number: int):
+def create_issue_chat_history(g: Gitee, repo_name: str, issue_number: int):
     repo = g.get_repo(repo_name)
     ai_user = g.get_user().login
     issue = repo.get_issue(number=issue_number)
@@ -132,9 +131,9 @@ def create_issue_chat_history(g: Github, repo_name: str, issue_number: int):
 
 
 if __name__ == "__main__":
-    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
-    g = Github(auth=auth)
-    repo_name = "tolatolatop/devbot"
-    issue_number = 5
-    res = create_issue_chat_history(g, repo_name, issue_number)
+    git_app = Gitee()
+    git_app.auth(None, None)
+    rn = "tolatolatop/devbot"
+    isn = 5
+    res = create_issue_chat_history(g, rn, isn)
     print(res)
