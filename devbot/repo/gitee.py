@@ -140,7 +140,7 @@ class Repo:
         return self.__data['html_url']
 
     def get_issue(self, issue_id):
-        api_path = f"/repos/{self.repo_name}/issues/{issue_id}"
+        api_path = f"/repos/{self.full_name}/issues/{issue_id}"
         resp = self.__gitee.requests("GET", api_path)
         return Issue(resp.json(), self, self.__gitee)
 
@@ -170,7 +170,7 @@ class Issue:
         return resp
 
     def get_comments(self):
-        api_path = f"/repos/{self.__repo.repo_name}/issues/{self.__issue_id}/comments"
+        api_path = f"/repos/{self.__repo.full_name}/issues/{self.__issue_id}/comments"
         resp = self.__gitee.requests("GET", api_path)
         data = [
             IssueComment(
@@ -197,4 +197,3 @@ if __name__ == "__main__":
     test_issue = 'I8HDEL'
     issue = repo.get_issue(test_issue)
     comments = issue.get_comments()
-    print(issue.create_comment('test reply'))
