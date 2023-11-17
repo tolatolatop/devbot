@@ -3,7 +3,7 @@ import os
 
 from fastapi import FastAPI, BackgroundTasks
 
-from repo.gitee import Gitee
+from .repo.gitee import Gitee
 
 from .repo import github
 from .agent import core
