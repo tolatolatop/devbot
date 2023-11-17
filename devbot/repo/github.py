@@ -35,7 +35,7 @@ class Issue:
     labels: List
     state: str
     comments: int
-    number: Union[str | int]
+    number: Union[str, int]
 
 
 @dataclass
