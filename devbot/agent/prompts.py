@@ -40,3 +40,14 @@ coding_prompt = ChatPromptTemplate.from_messages(
         MessagesPlaceholder(variable_name="chat_history"),
     ]
 )
+
+api_coding_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You can access documents and generate an openapi.json file based on the API request descriptions in the document.",
+        ),
+        ("user", "{input}"),
+        MessagesPlaceholder(variable_name="chat_history"),
+    ]
+)
