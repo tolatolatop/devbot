@@ -1926,6 +1926,27 @@ files = [
 ]
 
 [[package]]
+name = "pygitee"
+version = "1.0.0"
+description = "Gitee OpenApi"
+optional = false
+python-versions = ">3.4"
+files = []
+develop = false
+
+[package.dependencies]
+certifi = "*"
+python-dateutil = "*"
+six = ">=1.10"
+urllib3 = ">=1.15"
+
+[package.source]
+type = "git"
+url = "https://github.com/tolatolatop/pygitee.git"
+reference = "HEAD"
+resolved_reference = "39ea07754866db25cc926cdad16632dea46cb442"
+
+[[package]]
 name = "pygithub"
 version = "2.1.1"
 description = "Use the full Github API v3"
@@ -3291,4 +3312,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "37a27a40cc14b17008b9d71c67642ad1c1f4c18a70a200285cd248f531c4d6e4"
+content-hash = "3c89b3bce1981de55f18e4e40b4cdbb5134e9b30d803a4d98845b6600e9e2f12"
