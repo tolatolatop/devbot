@@ -1927,7 +1927,7 @@ files = [
 
 [[package]]
 name = "pygitee"
-version = "1.0.0"
+version = "1.1.1"
 description = "Gitee OpenApi"
 optional = false
 python-versions = ">3.4"
@@ -1944,7 +1944,7 @@ urllib3 = ">=1.15"
 type = "git"
 url = "https://github.com/tolatolatop/pygitee.git"
 reference = "HEAD"
-resolved_reference = "39ea07754866db25cc926cdad16632dea46cb442"
+resolved_reference = "37e8bb59e98b34f55da0dc014286de4c65af4e51"
 
 [[package]]
 name = "pygithub"
@@ -2066,6 +2066,21 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+
+[[package]]
+name = "pytest-dotenv"
+version = "0.5.2"
+description = "A py.test plugin that parses environment files before running tests"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-dotenv-0.5.2.tar.gz", hash = "sha256:2dc6c3ac6d8764c71c6d2804e902d0ff810fa19692e95fe138aefc9b1aa73732"},
+    {file = "pytest_dotenv-0.5.2-py3-none-any.whl", hash = "sha256:40a2cece120a213898afaa5407673f6bd924b1fa7eafce6bda0e8abffe2f710f"},
+]
+
+[package.dependencies]
+pytest = ">=5.0.0"
+python-dotenv = ">=0.9.1"
 
 [[package]]
 name = "python-dateutil"
@@ -3312,4 +3327,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "3c89b3bce1981de55f18e4e40b4cdbb5134e9b30d803a4d98845b6600e9e2f12"
+content-hash = "e84079021781fb12cf59783e72a1d645b7aa846e643374f58d1365224d4d6683"
