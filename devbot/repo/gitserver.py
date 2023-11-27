@@ -2,7 +2,7 @@ import abc
 import os
 import github
 import pygitee
-from typing import List
+from typing import List, Optional
 
 from devbot import repo
 
@@ -228,11 +228,12 @@ class GiteeServer(GitSever):
 
 
 class GitServerFactory:
-    def create_server_from_event(self, event) -> GitSever:
+    def create_server_from_event(self, event) -> Optional[GitSever]:
         if isinstance(event, repo.github.IssueEvent):
             return self.create_github_server()
-        else:
+        elif isinstance(event, repo.gitee.IssueEvent):
             return self.create_gitee_server()
+        return None
 
     def create_github_server(self) -> GitHubServer:
         auth = github.Auth.Token(os.environ["GITHUB_TOKEN"])
