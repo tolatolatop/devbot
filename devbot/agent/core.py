@@ -53,15 +53,18 @@ def run_agent_executor(input: str, agent_executor):
     return resp["output"]
 
 
-def replay_issue(repo_name, repo_url, commit_id, issue_number):
-    auth = Auth.Token(os.environ["GITHUB_TOKEN"])
-    g = Github(auth=auth)
+def reslove_issue(event, gitserver):
     use_prompt, tools_list, chat_history = prepare_coding_agent(
-        repo_name, repo_url, commit_id, issue_number
+        event.repository.full_name,
+        event.repository.clone_url,
+        "master",
+        event.issue.number,
     )
     ae = create_agent_executor(use_prompt, tools_list, chat_history[:-1])
     comment = run_agent_executor(chat_history[-1].content, ae)
-    tools.comment_issue_by_github(g, repo_name, issue_number, comment)
+    tools.comment_issue_by_github(
+        gitserver, event.repository.full_name, event.issue.number, comment
+    )
     return comment
 
 

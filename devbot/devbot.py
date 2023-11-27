@@ -28,11 +28,5 @@ async def webhook_github(
 ):
     g = accept_event(event)
     if g:
-        background_tasks.add_task(
-            core.replay_issue,
-            event.repository.full_name,
-            event.repository.clone_url,
-            "master",
-            event.issue.number,
-        )
+        background_tasks.add_task(core.reslove_issue, event, g)
     return {"message": "OK"}
