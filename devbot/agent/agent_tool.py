@@ -148,15 +148,21 @@ class PlanToDoAgent(PlanAgent):
     def _get_memory(self):
         chat_history = [
             self._get_project_info(),
-            HumanMessage(content=f"task_info: \n{self.task_info}"),
-            HumanMessage(content=f"{self.task}"),
+            HumanMessage(
+                content=f"""
+{self.task}
+task_info:
+{self.task_info}
+Be careful not to forget to add a plan for tests.
+"""
+            ),
         ]
         return chat_history
 
     def _get_tools(self):
         tools = FileManagementToolkit(
             root_dir=str(self.code_dir),
-            selected_tools=["copy_file"],
+            selected_tools=["read_file"],
         ).get_tools()
         return tools
 
@@ -167,14 +173,18 @@ class PlanToDoAgent(PlanAgent):
                     "system",
                     """
 You are very powerful coding assistant. Generates an execution plan based on the provided information and user requirements.
-You can only use the CREATE, MODIFY, and DELETE keywords to make plans. And make sure to take the minimum number of steps to implement your requirements.
-Correct Example:
+You can only use the CREATE, MODIFY, and DELETE keywords to make plans. Your plan contains up to 5 checklists.
+## Correct Example:
 - [ ] MODIFY README.rst  # update README.rst due to changes in guidelines
 - [ ] MODIFY main.py  # Add required functions
+- [ ] MODIFY test_main.py  # Test new required functions
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
-                ("user", "Task is: {input}. "),
+                (
+                    "user",
+                    "Original Task Desc: {input}.",
+                ),
                 MessagesPlaceholder(variable_name="agent_scratchpad"),
             ]
         )

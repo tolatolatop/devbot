@@ -104,7 +104,6 @@ def test_do_plan_tasks(code_dir, task, plan, expected):
     assert expected in resp
 
 
-@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task", "task_info"), tasks.plan_to_do_tasks)
 def test_plan_to_do_tasks(code_dir, task, task_info):
     agent = agent_tool.PlanToDoAgent(code_dir, task, task_info)
@@ -112,6 +111,7 @@ def test_plan_to_do_tasks(code_dir, task, task_info):
     assert "- [ ] MODIFY" in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task", "plan", "task_info"), tasks.to_do_tasks)
 def test_to_do_tasks(code_dir, task, plan, task_info):
     agent = agent_tool.ToDoAgent(code_dir, task, plan, task_info)

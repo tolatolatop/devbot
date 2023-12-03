@@ -122,8 +122,6 @@ To add a new FastAPI endpoint that returns the sum of two numbers `a` and `b`, y
 async def sum_numbers(a: int, b: int):
     return {"result": a + b}
 ```
-
-This new endpoint will be accessible at `/sum/{a}/{b}` where `{a}` and `{b}` are the numbers you want to add. For example, if you want to add 3 and 5, you can make a GET request to `/sum/3/5` and it will return `{"result": 8}`.
 """
 
 plan_to_do_tasks = [
