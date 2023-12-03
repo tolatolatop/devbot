@@ -17,6 +17,7 @@ COPY poetry.lock pyproject.toml ./
 FROM base as deploy
 RUN poetry install --only main
 COPY devbot devbot
+COPY startup_in_docker.sh startup_in_docker.sh
 
 CMD ["poetry", "run", "uvicorn", "devbot.devbot:app", "--host", "0.0.0.0", "--port", "80", "--log-config=devbot/log_conf.yaml"]
 

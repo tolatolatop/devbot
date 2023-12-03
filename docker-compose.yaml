@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: deploy
-    command: poetry run uvicorn devbot.devbot:app --host 0.0.0.0 --log-config=devbot/log_conf.yaml
+    command: bash startup_in_docker.sh
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
