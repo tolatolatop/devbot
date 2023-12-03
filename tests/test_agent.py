@@ -44,6 +44,14 @@ def coding_agent(git_server):
     return agent
 
 
+@pytest.fixture
+def code_dir(issue_agent):
+    code_dir = issue_agent.prepare_env(
+        read_file[0]["repo_url"],
+    )
+    return code_dir
+
+
 @pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
 def test_tasks(issue_agent, get_memory, expected):
@@ -63,9 +71,7 @@ def test_coding_tasks(coding_agent, get_memory, expected):
 
 
 @pytest.mark.skip("no test")
-@pytest.mark.parametrize(
-    ("code_dir", "file_path", "text", "task"), write_tasks
-)
+@pytest.mark.parametrize(("file_path", "text", "task"), write_tasks)
 def test_write_tasks(code_dir, file_path, text, task):
     tool = WriteFileTool(root_dir=code_dir)
     resp = tool.run(
@@ -79,7 +85,7 @@ def test_write_tasks(code_dir, file_path, text, task):
 
 
 @pytest.mark.skip("no test")
-@pytest.mark.parametrize(("code_dir", "task"), tasks.plan_tasks)
+@pytest.mark.parametrize(("task",), tasks.plan_tasks)
 def test_plan_tasks(code_dir, task):
     tool = PlanTool(root_dir=code_dir)
     resp = tool.run(
@@ -91,9 +97,7 @@ def test_plan_tasks(code_dir, task):
 
 
 @pytest.mark.skip("no test")
-@pytest.mark.parametrize(
-    ("code_dir", "task", "plan", "expected"), tasks.do_plan_tasks
-)
+@pytest.mark.parametrize(("task", "plan", "expected"), tasks.do_plan_tasks)
 def test_do_plan_tasks(code_dir, task, plan, expected):
     agent = agent_tool.DoPlanAgent(code_dir, task, plan)
     resp = agent.run()
@@ -101,19 +105,15 @@ def test_do_plan_tasks(code_dir, task, plan, expected):
 
 
 @pytest.mark.skip("no test")
-@pytest.mark.parametrize(
-    ("code_dir", "task", "task_info"), tasks.plan_to_do_tasks
-)
+@pytest.mark.parametrize(("task", "task_info"), tasks.plan_to_do_tasks)
 def test_plan_to_do_tasks(code_dir, task, task_info):
     agent = agent_tool.PlanToDoAgent(code_dir, task, task_info)
     resp = agent.run()
     assert "- [ ] MODIFY" in resp
 
 
-@pytest.mark.parametrize(
-    ("code_dir", "task", "plan", "task_info"), tasks.to_do_tasks
-)
+@pytest.mark.parametrize(("task", "plan", "task_info"), tasks.to_do_tasks)
 def test_to_do_tasks(code_dir, task, plan, task_info):
     agent = agent_tool.ToDoAgent(code_dir, task, plan, task_info)
     resp = agent.run()
-    assert "no things" in resp
+    assert "devbot/devbot.py" in resp

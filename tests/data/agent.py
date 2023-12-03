@@ -60,7 +60,6 @@ coding_tasks = [
 
 write_tasks = [
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "README.rst",
         """
 | Variable Name       | Value                                 |
@@ -80,14 +79,12 @@ write_tasks = [
 
 plan_tasks = [
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b的值",
     ),
 ]
 
 do_plan_tasks = [
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b 的值",
         """
 - [ ] READ cli.py  # Check if there are any existing API endpoints and understand the code structure
@@ -97,7 +94,6 @@ do_plan_tasks = [
         id="cli",
     ),
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b 的值",
         """
 - [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure
@@ -107,7 +103,6 @@ do_plan_tasks = [
         id="devbot/devbot",
     ),
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b 的值",
         """
 - [ ] READ tests/test_devbot.py  # Check if the required ce already exists
@@ -133,7 +128,6 @@ This new endpoint will be accessible at `/sum/{a}/{b}` where `{a}` and `{b}` are
 
 plan_to_do_tasks = [
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b 的值",
         plan_to_do_task_info,
         id="sum a + b",
@@ -142,7 +136,6 @@ plan_to_do_tasks = [
 
 to_do_tasks = [
     pytest.param(
-        ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b 的值",
         """
 - [ ] MODIFY devbot/devbot.py  # Add a new FastAPI endpoint for summing numbers
