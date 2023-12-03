@@ -1,1 +1,1 @@
-__import__ = ["repo"]
+__import__ = ["repo", "agent"]

@@ -2,41 +2,43 @@
 
 """Tests for `devbot` package."""
 
-import imp
+import os
 import pytest
-from .data.repo import webhook_test_data
-
-from langchain.agents import AgentExecutor
-from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from langchain.chat_models import ChatOpenAI
-from langchain.tools import tool
-from langchain.tools.render import format_tool_to_openai_function
-from langchain.schema.messages import HumanMessage, AIMessage
-
-from devbot.agent.prompts import api_coding_prompt
+from unittest import mock
 
 from dotenv import load_dotenv
+import github
+from langchain.schema.messages import HumanMessage, AIMessage, SystemMessage
+
+from devbot.agent.base import IssueAgent
+from .data.repo import read_file
 
 
-def test_agent():
+@pytest.fixture
+def git_server():
     load_dotenv()
+    auth = github.Auth.Token(os.environ["GITHUB_TOKEN"])
+    g = github.Github(auth=auth)
+    return g
 
-    llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
-    chat_history = [HumanMessage(content=open("openapi.html", "r").read())]
 
-    agent = (
-        {
-            "input": lambda x: x["input"],
-            "chat_history": lambda x: x.get("chat_history") or chat_history,
-        }
-        | api_coding_prompt
-        | llm
-        | OpenAIFunctionsAgentOutputParser()
-    ).with_config(run_name="Coding Agent")
+@pytest.fixture
+def read_file_memory():
+    memory = [
+        SystemMessage(
+            content="filelist:\nDockerfile\n.env.template\nREADME.rst\n---\n"
+        ),
+        HumanMessage(content="解释项目中所有需要配置的环境变量"),
+    ]
+    return mock.Mock(return_value=memory)
 
-    agent_executor = AgentExecutor(agent=agent, tools=[])
 
-    r = agent_executor.invoke(
-        {"input": "create a openapi.json from before document"}
+def test_agent(git_server, read_file_memory):
+    agent = IssueAgent(
+        git_server,
+        read_file[0]["repo_url"],
+        read_file[0]["issue_number"],
     )
-    print(r)
+    agent._get_memory = read_file_memory
+    resp = agent.run()
+    assert "LANGCHAIN_TRACING_V2" in resp
