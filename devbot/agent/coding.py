@@ -101,7 +101,11 @@ class IssueAgent(DevAgent):
 
 class CodingAgent(IssueAgent):
     def _get_tools(self):
-        return [toolkit.InfoPlanTool(root_dir=self.code_dir)]
+        tools = [
+            # toolkit.InfoPlanTool(root_dir=self.code_dir),
+            toolkit.DoInfoPlanTool(root_dir=self.code_dir),
+        ]
+        return tools
 
     def _get_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
@@ -110,12 +114,11 @@ class CodingAgent(IssueAgent):
                     "system",
                     """
 You are a very good programming expert. Please follow the process below to resolve the issue.
-1. According to the user's needs, generate information collection plan.
-2. Complete information collection plan according to user needs.
-3. Use ToDoPlan to generate a coding plan based on the user's needs.
-4. Complete the ToDo according to the user's needs.
+1. According to the user's needs, generate information collection plan. Return information collection Checklist.
+2. Complete information collection Checklist. Return helpful information.
+3. Use ToDoPlan to generate a coding plan based on the user's needs.  Return results using Checklist.
+4. Complete the ToDo according to the user's needs. Return task related complete information
 Stop waiting for user instructions when completing each process.
-Return results using Checklist.
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),

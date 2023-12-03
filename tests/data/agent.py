@@ -1,5 +1,5 @@
 import pytest
-from langchain.schema.messages import HumanMessage, SystemMessage
+from langchain.schema.messages import HumanMessage, SystemMessage, AIMessage
 
 
 from unittest import mock
@@ -39,15 +39,54 @@ memory_tasks = [
     ),
 ]
 
-update_env_var_to_readme = [
+coding_chat_history = [
     HumanMessage(content="README.rst中缺少项目环境变量描述，请根据仓库内容添加信息"),
+    AIMessage(
+        content="""
+- [ ] READ README.rst: Understand the current content of the file.
+- [ ] READ .env.template: Get the list of project environment variables.
+"""
+    ),
+    HumanMessage(content="Complete information collection plan"),
+    AIMessage(
+        content="""
+Task: Obtain original information based on plan
+
+To obtain the original information, I will read the content of the README.rst file.
+The list of project environment variables in the .env.template file is as follows:
+
+- LANGCHAIN_TRACING_V2=true
+- LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
+- LANGCHAIN_API_KEY=<your-api-key>
+- LANGCHAIN_PROJECT=<your-project> (defaults to "default" if not specified)
+- OPENAI_API_KEY=<your-openai-api-key>
+- SMEE_SOURCE=https://smee.io/new
+- SMEE_TARGET=http://devbot:8000/webhook/github
+
+Is there anything specific you would like to extract from this information?
+"""
+    ),
+    HumanMessage(content="下一步"),
 ]
 
 coding_tasks = [
     pytest.param(
-        mock.Mock(return_value=update_env_var_to_readme),
+        mock.Mock(return_value=coding_chat_history[:1]),
+        "- [] READ",
+        id="collect info",
+        marks=pytest.mark.skip("pass"),
+    ),
+    pytest.param(
+        mock.Mock(return_value=coding_chat_history[:3]),
         "LANGCHAIN_TRACING_V2",
-        id="env write",
+        id="read info",
+        marks=pytest.mark.skip("ready"),
+    ),
+    pytest.param(
+        mock.Mock(return_value=coding_chat_history[:5]),
+        "- [] READ",
+        id="read info",
+        marks=pytest.mark.skip("ready"),
     ),
 ]
 

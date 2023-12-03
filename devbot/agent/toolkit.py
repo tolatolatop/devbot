@@ -1,3 +1,4 @@
+import re
 from langchain.callbacks.manager import CallbackManagerForToolRun
 from typing import Optional, Type
 from langchain.pydantic_v1 import BaseModel, Field
@@ -88,3 +89,46 @@ class ToDoPlanTool(BaseFileToolMixin, BaseTool):
             return agent.run()
         except Exception as e:
             return "Error: " + str(e)
+
+
+class DoInfoPlanInput(BaseModel):
+    """Input for WriteFileTool."""
+
+    task: str = Field(..., description="task that require planning")
+    plan: str = Field(
+        ...,
+        description="checklist waiting to be completed. "
+        "Example:- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
+    )
+
+
+class DoInfoPlanTool(BaseFileToolMixin, BaseTool):
+    """Tool that generate plans for tasks."""
+
+    name: str = "collect_helpful_information"
+    args_schema: Type[BaseModel] = DoInfoPlanInput
+    description: str = "Tools for completing information collection checklists"
+
+    def _run(
+        self,
+        task: str,
+        plan: str,
+        run_manager: Optional[CallbackManagerForToolRun] = None,
+    ) -> str:
+        infos = []
+        try:
+            for s_plan in self._iter_plan(plan):
+                agent = agent_tool.DoPlanAgent(self.root_dir, task, s_plan)
+                resp = agent.run()
+                if "No helpful information" not in resp:
+                    infos.append(resp)
+            return "\n".join(infos)
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def _iter_plan(self, plan):
+        all_plan = re.findall(r"\[ \].*", plan)
+        if len(all_plan) == 0:
+            raise ValueError("Please check the plan parameter format")
+        for task in all_plan:
+            yield task
