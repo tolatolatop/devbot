@@ -54,6 +54,7 @@ coding_tasks = [
     pytest.param(
         mock.Mock(return_value=update_env_var_to_readme),
         "LANGCHAIN_TRACING_V2",
+        id="env write",
     ),
 ]
 
@@ -73,6 +74,7 @@ write_tasks = [
 | SMEE_TARGET         | http://devbot:8000/webhook/github       |
 """,
         "为原始文件补充环境变量设置",
+        id="env",
     ),
 ]
 
@@ -80,5 +82,37 @@ plan_tasks = [
     pytest.param(
         ".agent_cache/tolatolatop/devbot@master@15",
         "新增一个fastapi接口, 返回 a + b的值",
+    ),
+]
+
+do_plan_tasks = [
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b 的值",
+        """
+- [ ] READ cli.py  # Check if there are any existing API endpoints and understand the code structure
+""",
+        "No helpful information.",
+        marks=pytest.mark.skip("pass"),
+        id="cli",
+    ),
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b 的值",
+        """
+- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure
+""",
+        "a + b",
+        marks=pytest.mark.skip("pass"),
+        id="devbot/devbot",
+    ),
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b 的值",
+        """
+- [ ] READ tests/test_devbot.py  # Check if the required ce already exists
+""",
+        "No helpful information",
+        id="tests/test_devbot",
     ),
 ]

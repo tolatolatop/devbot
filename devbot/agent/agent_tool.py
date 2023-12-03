@@ -132,3 +132,52 @@ The wrong use case has the following errors
 
     def _get_chat_model(self):
         return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+
+class DoPlanAgent(DevAgent):
+    def __init__(self, code_dir, task: str, plan: str) -> None:
+        super().__init__()
+        self.code_dir = code_dir
+        self.task = task
+        self.plan = plan
+
+    @property
+    def name(self):
+        return "DoPlan"
+
+    def _get_tools(self):
+        tools = FileManagementToolkit(
+            root_dir=str(self.code_dir),
+            selected_tools=["read_file"],
+        ).get_tools()
+        return tools
+
+    def _get_memory(self):
+        chat_history = [
+            HumanMessage(content=f"Plan:\n{self.plan}"),
+            HumanMessage(content=f"{self.task}"),
+        ]
+        return chat_history
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+You are very powerful coding assistant.
+Complete the information gathering plan by following these steps:
+1. Obtain original information based on plan
+2. Extract information related to user requirements
+If there is nothing task-relevant in the original message. will return "No helpful information"
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "Task: {input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
+
+    def _get_chat_model(self):
+        return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)

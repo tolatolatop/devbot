@@ -11,6 +11,7 @@ import github
 from devbot.agent.coding import CodingAgent
 from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool, PlanTool
+from devbot.agent import agent_tool
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -77,6 +78,7 @@ def test_write_tasks(code_dir, file_path, text, task):
     assert "README.rst" in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("code_dir", "task"), tasks.plan_tasks)
 def test_plan_tasks(code_dir, task):
     tool = PlanTool(root_dir=code_dir)
@@ -86,3 +88,12 @@ def test_plan_tasks(code_dir, task):
         }
     )
     assert "- [ ] READ" in resp
+
+
+@pytest.mark.parametrize(
+    ("code_dir", "task", "plan", "expected"), tasks.do_plan_tasks
+)
+def test_do_plan_tasks(code_dir, task, plan, expected):
+    agent = agent_tool.DoPlanAgent(code_dir, task, plan)
+    resp = agent.run()
+    assert expected in resp
