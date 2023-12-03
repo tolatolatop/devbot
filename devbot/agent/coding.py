@@ -153,9 +153,12 @@ You are a very good programming expert. Please follow the process below to resol
 1. According to the user's needs, generate information collection plan.
 2. Use ToDoPlan to generate a coding plan based on the user's needs.
 Stop waiting for user instructions when completing each process.
-Return a Checklist.
-Example:
-- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
+Return a formatted Checklist.
+
+## Return Format Example
+- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure"
+- [ ] READ tests/test_devbot.py  # Check if the required ce already exists
+- [ ] MODIFY devbot/devbot.py  # Add a new FastAPI endpoint for summing numbers
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),

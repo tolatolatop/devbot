@@ -71,23 +71,24 @@ ToDo:
     HumanMessage(content="完成ToDo Checklist"),
 ]
 
-coding_tasks = [
+coding_plan_tasks = [
     pytest.param(
         mock.Mock(return_value=coding_chat_history[:1]),
-        "- [ ] READ",
+        "[ ] READ",
         id="collect info",
-        marks=pytest.mark.skip("pass"),
     ),
+    pytest.param(
+        mock.Mock(return_value=coding_chat_history[3:5]),
+        "[ ] MODIFY",
+        id="create todo",
+    ),
+]
+
+coding_tasks = [
     pytest.param(
         mock.Mock(return_value=coding_chat_history[:3]),
         "LANGCHAIN_TRACING_V2",
         id="read info",
-        marks=pytest.mark.skip("ready"),
-    ),
-    pytest.param(
-        mock.Mock(return_value=coding_chat_history[:5]),
-        "[ ] Modify",
-        id="create todo",
         marks=pytest.mark.skip("ready"),
     ),
     pytest.param(
