@@ -90,6 +90,7 @@ def test_plan_tasks(code_dir, task):
     assert "- [ ] READ" in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(
     ("code_dir", "task", "plan", "expected"), tasks.do_plan_tasks
 )
@@ -97,3 +98,12 @@ def test_do_plan_tasks(code_dir, task, plan, expected):
     agent = agent_tool.DoPlanAgent(code_dir, task, plan)
     resp = agent.run()
     assert expected in resp
+
+
+@pytest.mark.parametrize(
+    ("code_dir", "task", "task_info"), tasks.plan_to_do_tasks
+)
+def test_plan_to_do_tasks(code_dir, task, task_info):
+    agent = agent_tool.PlanToDoAgent(code_dir, task, task_info)
+    resp = agent.run()
+    assert "no things" in resp

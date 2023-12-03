@@ -137,9 +137,9 @@ The wrong use case has the following errors
 
 
 class PlanToDoAgent(PlanAgent):
-    def __init__(self, code_dir, task: str, summary_info: str) -> None:
+    def __init__(self, code_dir, task: str, task_info: str) -> None:
         super().__init__(code_dir=code_dir, task=task)
-        self.summary_info = summary_info
+        self.task_info = task_info
 
     @property
     def name(self):
@@ -148,6 +148,7 @@ class PlanToDoAgent(PlanAgent):
     def _get_memory(self):
         chat_history = [
             self._get_project_info(),
+            HumanMessage(content=f"task_info: \n{self.task_info}"),
             HumanMessage(content=f"{self.task}"),
         ]
         return chat_history
@@ -164,7 +165,13 @@ class PlanToDoAgent(PlanAgent):
             [
                 (
                     "system",
-                    "",
+                    """
+You are very powerful coding assistant. Generates an execution plan based on the provided information and user requirements.
+You can only use the CREATE, MODIFY, and DELETE keywords to make plans. And make sure to take the minimum number of steps to implement your requirements.
+Correct Example:
+- [ ] MODIFY README.rst  # update README.rst due to changes in guidelines
+- [ ] MODIFY main.py  # Add required functions
+""",
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
                 ("user", "Task is: {input}. "),

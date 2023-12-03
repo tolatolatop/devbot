@@ -117,7 +117,7 @@ do_plan_tasks = [
     ),
 ]
 
-coding_task_info = """
+plan_to_do_task_info = """
 Based on the provided code, there are already existing API endpoints defined in the `devbot/devbot.py` file. 
 
 To add a new FastAPI endpoint that returns the sum of two numbers `a` and `b`, you can modify the code as follows:
@@ -130,3 +130,12 @@ async def sum_numbers(a: int, b: int):
 
 This new endpoint will be accessible at `/sum/{a}/{b}` where `{a}` and `{b}` are the numbers you want to add. For example, if you want to add 3 and 5, you can make a GET request to `/sum/3/5` and it will return `{"result": 8}`.
 """
+
+plan_to_do_tasks = [
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b 的值",
+        plan_to_do_task_info,
+        id="sum a + b",
+    ),
+]
