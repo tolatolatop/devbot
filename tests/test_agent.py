@@ -85,4 +85,4 @@ def test_plan_tasks(code_dir, task):
             "task": task,
         }
     )
-    assert "abc" in resp
+    assert "- [ ] READ" in resp
