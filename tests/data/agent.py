@@ -75,3 +75,10 @@ write_tasks = [
         "为原始文件补充环境变量设置",
     ),
 ]
+
+plan_tasks = [
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b的值",
+    ),
+]

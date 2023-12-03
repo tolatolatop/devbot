@@ -84,30 +84,51 @@ class PlanAgent(DevAgent):
         tools = git_toolkit.get_tools()
         tool = [t for t in tools if t.name == "list_directory"][0]
         files_list = tool.run({})
-        return SystemMessage(content=f"file list: {files_list}")
+        return SystemMessage(content=f"file list in project:\n {files_list}")
 
     def _get_memory(self):
-        chat_history = self._get_project_info()
+        chat_history = [
+            self._get_project_info(),
+            HumanMessage(content=f"{self.task}"),
+        ]
         return chat_history
 
     def _get_tools(self):
-        return []
+        tools = FileManagementToolkit(
+            root_dir=str(self.code_dir),
+            selected_tools=["copy_file"],
+        ).get_tools()
+        return tools
 
     def _get_prompt(self):
-        issue_prompt = ChatPromptTemplate.from_messages(
+        prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    "You are very powerful coding assistant."
-                    "Collect relevant information as required and output it in the following format."
-                    "You can view and summarize any file in the repository.",
+                    """
+You are very powerful coding assistant.Collect relevant information as required.Develop a plan for collecting information based on the user's tasks.
+You can only use the READ keywords to develop your plan.No need to output redundant information and make sure there are as few steps as possible
+
+Correct Example:
+- [ ] READ README.rst  # Understand project goals
+- [ ] READ main.py  # View files to be modified
+
+Error Example:
+1. Understand the project goals: 
+- [ ] READ README.rst # Understand project goals 
+2. View the files in the project to identify where the FastAPI code needs to be added: 
+- [ ] READ main.py # View files to be modified
+
+The wrong use case has the following errors
+1. Use numerical serial numbers to express task content
+""",
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
-                ("user", "{input}"),
+                ("user", "Task is: {input}. "),
                 MessagesPlaceholder(variable_name="agent_scratchpad"),
             ]
         )
-        return issue_prompt
+        return prompt
 
     def _get_chat_model(self):
         return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
