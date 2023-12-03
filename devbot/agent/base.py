@@ -1,6 +1,6 @@
 import abc
 import os
-from typing import List, Callable, Dict, Tuple, Optional
+from typing import List, Callable, Dict, Tuple
 
 import github
 from git import Repo
@@ -15,11 +15,10 @@ from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import HumanMessage, AIMessage, SystemMessage
 from langchain.agents.agent_toolkits import FileManagementToolkit
-from langchain.agents.agent_toolkits.base import BaseToolkit
 from langchain.tools import tool
 from langchain.tools.base import BaseTool
 
-from devbot.agent.toolkit import ListTreeTool
+from devbot.agent.toolkit import GitToolkit
 
 
 class DevAgent(abc.ABC):
@@ -83,13 +82,6 @@ class DevAgent(abc.ABC):
         return self._run()
 
     # TODO: Add aiofiles method
-
-
-class GitToolkit(BaseToolkit):
-    root_dir: Optional[str] = None
-
-    def get_tools(self) -> List[BaseTool]:
-        return [ListTreeTool(root_dir=self.root_dir)]
 
 
 class IssueAgent(DevAgent):

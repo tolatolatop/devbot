@@ -1,7 +1,8 @@
 import subprocess as sp
+from langchain.agents.agent_toolkits.base import BaseToolkit
 from langchain.callbacks.manager import CallbackManagerForToolRun
 import os
-from typing import Optional, Type
+from typing import List, Optional, Type
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool
 from langchain.tools.base import BaseTool
@@ -47,3 +48,10 @@ class ListTreeTool(BaseFileToolMixin, BaseTool):
             "\n----\n"
         )
         return text
+
+
+class GitToolkit(BaseToolkit):
+    root_dir: Optional[str] = None
+
+    def get_tools(self) -> List[BaseTool]:
+        return [ListTreeTool(root_dir=self.root_dir)]
