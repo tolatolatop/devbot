@@ -156,9 +156,12 @@ Stop waiting for user instructions when completing each process.
 Return a formatted Checklist.
 
 ## Return Format Example
+```example
+ToDo:
 - [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure"
 - [ ] READ tests/test_devbot.py  # Check if the required ce already exists
 - [ ] MODIFY devbot/devbot.py  # Add a new FastAPI endpoint for summing numbers
+```
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
