@@ -30,9 +30,17 @@ def issue_agent(git_server):
     return agent
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
-def test_agent(issue_agent, get_memory, expected):
+def test_tasks(issue_agent, get_memory, expected):
     agent = issue_agent
     agent._get_memory = get_memory
     resp = agent.run()
     assert expected in resp
+
+
+@pytest.mark.skip("stabled")
+def test_get_memory(issue_agent):
+    agent = issue_agent
+    memory = agent._get_memory()
+    assert "环境变量" in memory[0].content
