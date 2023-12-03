@@ -104,7 +104,8 @@ class CodingAgent(IssueAgent):
         tools = [
             # toolkit.InfoPlanTool(root_dir=self.code_dir),
             # toolkit.DoInfoPlanTool(root_dir=self.code_dir),
-            toolkit.ToDoPlanTool(root_dir=self.code_dir),
+            # toolkit.ToDoPlanTool(root_dir=self.code_dir),
+            toolkit.ToDoTool(root_dir=self.code_dir),
         ]
         return tools
 

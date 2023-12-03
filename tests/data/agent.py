@@ -91,8 +91,8 @@ coding_tasks = [
         marks=pytest.mark.skip("ready"),
     ),
     pytest.param(
-        mock.Mock(return_value=coding_chat_history[:7]),
-        "- [ ] READ",
+        mock.Mock(return_value=coding_chat_history[3:7]),
+        "README.rst",
         id="do task",
     ),
 ]

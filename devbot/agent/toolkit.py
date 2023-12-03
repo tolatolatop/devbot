@@ -134,3 +134,52 @@ class DoInfoPlanTool(BaseFileToolMixin, BaseTool):
             raise ValueError("Please check the plan parameter format")
         for task in all_plan:
             yield task
+
+
+class ToDoInput(BaseModel):
+    """Input for WriteFileTool."""
+
+    task: str = Field(..., description="task that require planning")
+    plan: str = Field(
+        ...,
+        description="checklist waiting to be completed. "
+        "Example:- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
+    )
+    task_info: str = Field(
+        ..., description="Information that helps you complete your tasks"
+    )
+
+
+class ToDoTool(BaseFileToolMixin, BaseTool):
+    """Tools for completing todos"""
+
+    name: str = "complete_todo"
+    args_schema: Type[BaseModel] = ToDoInput
+    description: str = "Tools for completing todos"
+
+    def _run(
+        self,
+        task: str,
+        plan: str,
+        task_info: str,
+        run_manager: Optional[CallbackManagerForToolRun] = None,
+    ) -> str:
+        infos = []
+        try:
+            for s_plan in self._iter_plan(plan):
+                agent = agent_tool.ToDoAgent(
+                    self.root_dir, task, s_plan, task_info
+                )
+                resp = agent.run()
+                if "No helpful information" not in resp:
+                    infos.append(resp)
+            return "\n".join(infos)
+        except Exception as e:
+            return "Error: " + str(e)
+
+    def _iter_plan(self, plan):
+        all_plan = re.findall(r"\[ \].*", plan)
+        if len(all_plan) == 0:
+            raise ValueError("Please check the plan parameter format")
+        for task in all_plan:
+            yield task
