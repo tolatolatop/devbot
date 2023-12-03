@@ -38,3 +38,21 @@ memory_tasks = [
         marks=pytest.mark.skip("no tests"),
     ),
 ]
+
+update_env_var_to_readme = [
+    HumanMessage(
+        content="""
+1.读取项目中.env.template文件
+2.根据读取到的内容进行总结
+3.将总结的内容以表格形式写入到到项目README.rst
+4.最后读取最终README.rst内容并返回
+"""
+    ),
+]
+
+coding_tasks = [
+    pytest.param(
+        mock.Mock(return_value=update_env_var_to_readme),
+        "LANGCHAIN_TRACING_V2",
+    ),
+]

@@ -8,8 +8,8 @@ import pytest
 from dotenv import load_dotenv
 import github
 
-from devbot.agent.base import IssueAgent
-from .data.agent import read_file, memory_tasks
+from devbot.agent.base import IssueAgent, CodingAgent
+from .data.agent import read_file, memory_tasks, coding_tasks
 
 
 @pytest.fixture
@@ -30,6 +30,16 @@ def issue_agent(git_server):
     return agent
 
 
+@pytest.fixture
+def coding_agent(git_server):
+    agent = CodingAgent(
+        git_server,
+        read_file[0]["repo_url"],
+        read_file[0]["issue_number"],
+    )
+    return agent
+
+
 @pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
 def test_tasks(issue_agent, get_memory, expected):
@@ -39,7 +49,9 @@ def test_tasks(issue_agent, get_memory, expected):
     assert expected in resp
 
 
-def test_get_memory(issue_agent):
-    agent = issue_agent
-    memory = agent._get_memory()
-    assert ".env.template" in memory[0].content
+@pytest.mark.parametrize(("get_memory", "expected"), coding_tasks)
+def test_coding_tasks(coding_agent, get_memory, expected):
+    agent = coding_agent
+    agent._get_memory = get_memory
+    resp = agent.run()
+    assert expected in resp

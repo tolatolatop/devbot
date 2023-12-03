@@ -74,7 +74,7 @@ class DevAgent(abc.ABC):
             | OpenAIFunctionsAgentOutputParser()
         ).with_config(run_name=self.name)
 
-        agent_executor = AgentExecutor(agent=agent, tools=tools)  # type: ignore
+        agent_executor = AgentExecutor(agent=agent, tools=tools, handle_parsing_errors=True)  # type: ignore
         resp = agent_executor.invoke({"input": input.content})  # type: ignore
         return resp["output"]
 
@@ -147,8 +147,6 @@ class IssueAgent(DevAgent):
             root_dir=str(self.code_dir),
             selected_tools=["read_file"],
         ).get_tools()
-        git_toolkit = GitToolkit(root_dir=self.code_dir)
-        tools.extend(git_toolkit.get_tools())
         return tools
 
     def _get_prompt(self):
@@ -170,3 +168,26 @@ class IssueAgent(DevAgent):
 
     def _get_chat_model(self):
         return ChatOpenAI(model="gpt-3.5-turbo-16k")
+
+
+class CodingAgent(IssueAgent):
+    def _get_tools(self):
+        tools = FileManagementToolkit(
+            root_dir=str(self.code_dir),
+            selected_tools=["read_file", "write_file"],
+        ).get_tools()
+        return tools
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "You are a very good python engineer. Please complete user needs by following actions.",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
