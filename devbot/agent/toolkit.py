@@ -141,11 +141,11 @@ class DoInfoPlanTool(BaseFileToolMixin, BaseTool):
 class ToDoInput(BaseModel):
     """Input for WriteFileTool."""
 
-    task: str = Field(..., description="task that require planning")
-    plan: str = Field(
+    task: str = Field(..., description="Summarize the task in one sentence")
+    todo_list: str = Field(
         ...,
-        description="checklist waiting to be completed. "
-        "Example:- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
+        description="todo list\n"
+        "Example:\n- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
     )
     task_info: str = Field(
         ..., description="Information that helps you complete your tasks"
@@ -162,15 +162,15 @@ class ToDoTool(BaseFileToolMixin, BaseTool):
     def _run(
         self,
         task: str,
-        plan: str,
+        todo_list: str,
         task_info: str,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         infos = []
         try:
-            for s_plan in self._iter_plan(plan):
+            for plan in self._iter_plan(todo_list):
                 agent = agent_tool.ToDoAgent(
-                    self.root_dir, task, s_plan, task_info
+                    self.root_dir, task, plan, task_info
                 )
                 resp = agent.run()
                 if "No helpful information" not in resp:

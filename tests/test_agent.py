@@ -71,7 +71,6 @@ def test_tasks(issue_agent, get_memory, expected):
     assert expected in resp
 
 
-@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), tasks.coding_tasks)
 def test_coding_tasks(coding_agent, get_memory, expected):
     agent = coding_agent
@@ -80,6 +79,7 @@ def test_coding_tasks(coding_agent, get_memory, expected):
     assert expected in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), tasks.coding_plan_tasks)
 def test_coding_plan_tasks(plan_agent, get_memory, expected):
     agent = plan_agent

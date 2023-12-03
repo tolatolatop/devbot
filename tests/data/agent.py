@@ -89,7 +89,7 @@ coding_tasks = [
         mock.Mock(return_value=coding_chat_history[:3]),
         "LANGCHAIN_TRACING_V2",
         id="read info",
-        marks=pytest.mark.skip("ready"),
+        marks=pytest.mark.skip("no test"),
     ),
     pytest.param(
         mock.Mock(return_value=coding_chat_history[3:7]),
