@@ -59,7 +59,8 @@ class InfoPlanTool(BaseFileToolMixin, BaseTool):
     ) -> str:
         try:
             agent = PlanQueryAgent(self.root_dir, task)
-            return agent.run()
+            resp = agent.run()
+            return f"Task Info:\n{resp}"
         except Exception as e:
             return "Error: " + str(e)
 
@@ -88,7 +89,8 @@ class ToDoPlanTool(BaseFileToolMixin, BaseTool):
     ) -> str:
         try:
             agent = agent_tool.PlanToDoAgent(self.root_dir, task, task_info)
-            return agent.run()
+            resp = agent.run()
+            return f"ToDo:\n{resp}"
         except Exception as e:
             return "Error: " + str(e)
 

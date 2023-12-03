@@ -100,11 +100,13 @@ class IssueAgent(DevAgent):
 
 
 class CodingAgent(IssueAgent):
+    @property
+    def name(self):
+        return "Coding"
+
     def _get_tools(self):
         tools = [
-            # toolkit.InfoPlanTool(root_dir=self.code_dir),
-            # toolkit.DoInfoPlanTool(root_dir=self.code_dir),
-            # toolkit.ToDoPlanTool(root_dir=self.code_dir),
+            toolkit.DoInfoPlanTool(root_dir=self.code_dir),
             toolkit.ToDoTool(root_dir=self.code_dir),
         ]
         return tools
@@ -116,11 +118,44 @@ class CodingAgent(IssueAgent):
                     "system",
                     """
 You are a very good programming expert. Please follow the process below to resolve the issue.
-1. According to the user's needs, generate information collection plan. Return information collection Checklist.
-2. Complete information collection Checklist. Return helpful information.
-3. Use ToDoPlan to generate a coding plan based on the user's needs.  Return results using Checklist.
-4. Complete the ToDo according to the user's needs. Return task related complete information
+1. Complete information collection Checklist.
+2. Complete the ToDo according to the user's needs.
 Stop waiting for user instructions when completing each process.
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
+
+
+class PlanAgent(IssueAgent):
+    @property
+    def name(self):
+        return "Plan"
+
+    def _get_tools(self):
+        tools = [
+            toolkit.InfoPlanTool(root_dir=self.code_dir),
+            toolkit.ToDoPlanTool(root_dir=self.code_dir),
+        ]
+        return tools
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+You are a very good programming expert. Please follow the process below to resolve the issue.
+1. According to the user's needs, generate information collection plan.
+2. Use ToDoPlan to generate a coding plan based on the user's needs.
+Stop waiting for user instructions when completing each process.
+Return a Checklist.
+Example:
+- [ ] READ devbot/devbot.py  # Check if there are any existing API endpoints and understand the code structure",
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
