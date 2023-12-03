@@ -4,14 +4,12 @@
 
 import os
 import pytest
-from unittest import mock
 
 from dotenv import load_dotenv
 import github
-from langchain.schema.messages import HumanMessage, AIMessage, SystemMessage
 
 from devbot.agent.base import IssueAgent
-from .data.repo import read_file
+from .data.agent import read_file, memory_tasks
 
 
 @pytest.fixture
@@ -23,22 +21,18 @@ def git_server():
 
 
 @pytest.fixture
-def read_file_memory():
-    memory = [
-        SystemMessage(
-            content="filelist:\nDockerfile\n.env.template\nREADME.rst\n---\n"
-        ),
-        HumanMessage(content="解释项目中所有需要配置的环境变量"),
-    ]
-    return mock.Mock(return_value=memory)
-
-
-def test_agent(git_server, read_file_memory):
+def issue_agent(git_server):
     agent = IssueAgent(
         git_server,
         read_file[0]["repo_url"],
         read_file[0]["issue_number"],
     )
-    agent._get_memory = read_file_memory
+    return agent
+
+
+@pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
+def test_agent(issue_agent, get_memory, expected):
+    agent = issue_agent
+    agent._get_memory = get_memory
     resp = agent.run()
-    assert "LANGCHAIN_TRACING_V2" in resp
+    assert expected in resp
