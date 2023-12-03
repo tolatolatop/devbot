@@ -7,7 +7,6 @@ from git import Repo
 from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.prompts.chat import ChatPromptTemplate
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 
 

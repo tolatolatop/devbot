@@ -56,3 +56,22 @@ coding_tasks = [
         "LANGCHAIN_TRACING_V2",
     ),
 ]
+
+write_tasks = [
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "README.rst",
+        """
+| Variable Name       | Value                                 |
+|---------------------|---------------------------------------|
+| LANGCHAIN_TRACING_V2 | true                                  |
+| LANGCHAIN_ENDPOINT  | https://api.smith.langchain.com        |
+| LANGCHAIN_API_KEY   | <your-api-key>                        |
+| LANGCHAIN_PROJECT   | <your-project> (if not specified, defaults to "default") |
+| OPENAI_API_KEY      | <your-openai-api-key>                 |
+| SMEE_SOURCE         | https://smee.io/new                    |
+| SMEE_TARGET         | http://devbot:8000/webhook/github       |
+""",
+        "为原始文件补充环境变量设置",
+    ),
+]

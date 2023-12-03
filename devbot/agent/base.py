@@ -5,7 +5,6 @@ from langchain.chat_models.base import BaseChatModel
 from langchain.tools.render import format_tool_to_openai_function
 from langchain.agents.format_scratchpad import format_to_openai_functions
 from langchain.tools import BaseTool
-from langchain.prompts.chat import ChatPromptTemplate
 from langchain.agents import AgentExecutor
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.prompts import ChatPromptTemplate
