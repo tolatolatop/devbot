@@ -101,19 +101,21 @@ class IssueAgent(DevAgent):
 
 class CodingAgent(IssueAgent):
     def _get_tools(self):
-        tools = FileManagementToolkit(
-            root_dir=str(self.code_dir),
-            selected_tools=["read_file", "write_file"],
-        ).get_tools()
-        return tools
+        return []
 
     def _get_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    "You are a very good python engineer. Please complete user needs by following actions."
-                    "",
+                    """
+You are a very good programming expert. Please follow the process below to resolve the issue.
+1. According to the user's needs, generate information collection plan.
+2. Complete information collection plan according to user needs.
+3. Use ToDoPlan to generate a coding plan based on the user's needs.
+4. Complete the ToDo according to the user's needs.
+Stop waiting for user instructions when completing each process.
+""",
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
                 ("user", "{input}"),

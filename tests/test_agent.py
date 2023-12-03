@@ -10,7 +10,7 @@ import github
 
 from devbot.agent.coding import CodingAgent
 from devbot.agent.coding import IssueAgent
-from devbot.agent.toolkit import WriteFileTool, PlanTool
+from devbot.agent.toolkit import WriteFileTool, InfoPlanTool
 from devbot.agent import agent_tool
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
@@ -87,7 +87,7 @@ def test_write_tasks(code_dir, file_path, text, task):
 @pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task",), tasks.plan_tasks)
 def test_plan_tasks(code_dir, task):
-    tool = PlanTool(root_dir=code_dir)
+    tool = InfoPlanTool(root_dir=code_dir)
     resp = tool.run(
         {
             "task": task,
@@ -104,6 +104,7 @@ def test_do_plan_tasks(code_dir, task, plan, expected):
     assert expected in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task", "task_info"), tasks.plan_to_do_tasks)
 def test_plan_to_do_tasks(code_dir, task, task_info):
     agent = agent_tool.PlanToDoAgent(code_dir, task, task_info)
@@ -117,3 +118,12 @@ def test_to_do_tasks(code_dir, task, plan, task_info):
     agent = agent_tool.ToDoAgent(code_dir, task, plan, task_info)
     resp = agent.run()
     assert "devbot/devbot.py" in resp
+
+
+@pytest.mark.skip("no test")
+@pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
+def test_tasks(issue_agent, get_memory, expected):
+    agent = issue_agent
+    agent._get_memory = get_memory
+    resp = agent.run()
+    assert expected in resp
