@@ -13,7 +13,7 @@ from langchain.prompts.chat import ChatPromptTemplate
 from langchain.agents import AgentExecutor
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.schema.messages import HumanMessage, AIMessage
+from langchain.schema.messages import HumanMessage, AIMessage, SystemMessage
 from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.agents.agent_toolkits.base import BaseToolkit
 from langchain.tools import tool
@@ -119,7 +119,7 @@ class IssueAgent(DevAgent):
     def name(self):
         return "Issue"
 
-    def _get_memory(self):
+    def _get_issue_chat_history(self):
         repo = self.git_server.get_repo(self.repo_name)
         ai_user = self.git_server.get_user().login
         issue = repo.get_issue(number=self.issue_number)
@@ -135,6 +135,19 @@ class IssueAgent(DevAgent):
             else:
                 msg = HumanMessage(content=c.body)
             chat_history.append(msg)
+        return chat_history
+
+    def _get_project_info(self):
+        git_toolkit = GitToolkit(root_dir=self.code_dir)
+        tools = git_toolkit.get_tools()
+        tool = [t for t in tools if t.name == "list_directory"][0]
+        files_list = tool.run({})
+        return SystemMessage(content=f"file list: {files_list}")
+
+    def _get_memory(self):
+        chat_history = self._get_issue_chat_history()
+        project_info = self._get_project_info()
+        chat_history.insert(0, project_info)
         return chat_history
 
     def _get_tools(self):

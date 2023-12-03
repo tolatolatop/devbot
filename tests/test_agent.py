@@ -39,8 +39,7 @@ def test_tasks(issue_agent, get_memory, expected):
     assert expected in resp
 
 
-@pytest.mark.skip("stabled")
 def test_get_memory(issue_agent):
     agent = issue_agent
     memory = agent._get_memory()
-    assert "环境变量" in memory[0].content
+    assert ".env.template" in memory[0].content
