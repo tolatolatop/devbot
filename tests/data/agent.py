@@ -50,11 +50,7 @@ coding_chat_history = [
     HumanMessage(content="Complete information collection plan"),
     AIMessage(
         content="""
-Task: Obtain original information based on plan
-
-To obtain the original information, I will read the content of the README.rst file.
-The list of project environment variables in the .env.template file is as follows:
-
+Task Info:
 - LANGCHAIN_TRACING_V2=true
 - LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
 - LANGCHAIN_API_KEY=<your-api-key>
@@ -62,17 +58,23 @@ The list of project environment variables in the .env.template file is as follow
 - OPENAI_API_KEY=<your-openai-api-key>
 - SMEE_SOURCE=https://smee.io/new
 - SMEE_TARGET=http://devbot:8000/webhook/github
-
 Is there anything specific you would like to extract from this information?
 """
     ),
-    HumanMessage(content="下一步"),
+    HumanMessage(content="根据获取到的信息生成coding checklist"),
+    AIMessage(
+        content="""
+ToDo:
+- [ ] Modify the README.rst file to include the following project environment variable descriptions:
+"""
+    ),
+    HumanMessage(content="完成ToDo Checklist"),
 ]
 
 coding_tasks = [
     pytest.param(
         mock.Mock(return_value=coding_chat_history[:1]),
-        "- [] READ",
+        "- [ ] READ",
         id="collect info",
         marks=pytest.mark.skip("pass"),
     ),
@@ -84,9 +86,14 @@ coding_tasks = [
     ),
     pytest.param(
         mock.Mock(return_value=coding_chat_history[:5]),
-        "- [] READ",
-        id="read info",
+        "[ ] Modify",
+        id="create todo",
         marks=pytest.mark.skip("ready"),
+    ),
+    pytest.param(
+        mock.Mock(return_value=coding_chat_history[:7]),
+        "- [ ] READ",
+        id="do task",
     ),
 ]
 

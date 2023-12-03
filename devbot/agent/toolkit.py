@@ -68,14 +68,16 @@ class ToDoPlanInput(BaseModel):
     """Input for WriteFileTool."""
 
     task: str = Field(..., description="task that require planning")
-    task_info: str = Field(..., description="Information related to the task")
+    task_info: str = Field(
+        ..., description="Information that helps you complete your tasks"
+    )
 
 
 class ToDoPlanTool(BaseFileToolMixin, BaseTool):
     """Tool that generate plans for tasks."""
 
     name: str = "create_coding_plan"
-    args_schema: Type[BaseModel] = PlanInput
+    args_schema: Type[BaseModel] = ToDoPlanInput
     description: str = "Tool that generate a coding plan."
 
     def _run(
