@@ -1,5 +1,5 @@
 from devbot.agent.base import DevAgent
-from devbot.agent.toolkit import GitToolkit
+from devbot.agent.tools import GitToolkit
 
 
 import github
