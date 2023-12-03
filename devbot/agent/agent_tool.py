@@ -75,16 +75,21 @@ class PlanAgent(DevAgent):
         self.code_dir = code_dir
         self.task = task
 
-    @property
-    def name(self):
-        return "Plan"
-
     def _get_project_info(self):
         git_toolkit = GitToolkit(root_dir=self.code_dir)
         tools = git_toolkit.get_tools()
         tool = [t for t in tools if t.name == "list_directory"][0]
         files_list = tool.run({})
         return SystemMessage(content=f"file list in project:\n {files_list}")
+
+    def _get_chat_model(self):
+        return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+
+class PlanQueryAgent(PlanAgent):
+    @property
+    def name(self):
+        return "Plan"
 
     def _get_memory(self):
         chat_history = [
@@ -130,8 +135,43 @@ The wrong use case has the following errors
         )
         return prompt
 
-    def _get_chat_model(self):
-        return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+class PlanToDoAgent(PlanAgent):
+    def __init__(self, code_dir, task: str, summary_info: str) -> None:
+        super().__init__(code_dir=code_dir, task=task)
+        self.summary_info = summary_info
+
+    @property
+    def name(self):
+        return "PlanToDo"
+
+    def _get_memory(self):
+        chat_history = [
+            self._get_project_info(),
+            HumanMessage(content=f"{self.task}"),
+        ]
+        return chat_history
+
+    def _get_tools(self):
+        tools = FileManagementToolkit(
+            root_dir=str(self.code_dir),
+            selected_tools=["copy_file"],
+        ).get_tools()
+        return tools
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "Task is: {input}. "),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
 
 
 class DoPlanAgent(DevAgent):

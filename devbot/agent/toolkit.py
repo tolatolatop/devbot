@@ -7,7 +7,7 @@ from langchain.tools.file_management.utils import BaseFileToolMixin
 from langchain.tools.file_management.write import (
     WriteFileTool as BaseWriteFileTool,
 )
-from devbot.agent.agent_tool import PlanAgent, WriteAgent
+from devbot.agent.agent_tool import PlanQueryAgent, WriteAgent
 
 
 class WriteFileInput(BaseModel):
@@ -56,7 +56,7 @@ class PlanTool(BaseFileToolMixin, BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         try:
-            agent = PlanAgent(self.root_dir, task)
+            agent = PlanQueryAgent(self.root_dir, task)
             return agent.run()
         except Exception as e:
             return "Error: " + str(e)
