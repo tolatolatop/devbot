@@ -35,7 +35,7 @@ class WriteAgent(DevAgent):
             SystemMessage(
                 content=f"content of original file:\n{origin_content}"
             ),
-            HumanMessage(content=f"Reference content:\n{self.text}"),
+            HumanMessage(content=f"Append content:\n{self.text}"),
             AIMessage(content=f"I have memorized the above reference"),
             HumanMessage(
                 content=f"1. {self.task}\n2. write to {self.file_path}"
@@ -228,3 +228,44 @@ If there is nothing task-relevant in the original message. will return "No helpf
 
     def _get_chat_model(self):
         return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+
+class ToDoAgent(DoPlanAgent):
+    def __init__(self, code_dir, task: str, plan: str, task_info: str) -> None:
+        super().__init__(code_dir, task, plan)
+        self.task_info = task_info
+
+    @property
+    def name(self):
+        return "ToDo"
+
+    def _get_memory(self):
+        chat_history = [
+            HumanMessage(
+                content=f"Origin Task:\n{self.task}\n Task Info:\n {self.task_info}"
+            ),
+            HumanMessage(content=f"{self.plan}"),
+        ]
+        return chat_history
+
+    def _get_tools(self):
+        from devbot.agent.toolkit import WriteFileTool
+
+        tools = [WriteFileTool(root_dir=self.code_dir)]
+        return tools
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+You are very powerful coding assistant. Use tools to complete ToDo.
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "ToDo:\n{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt

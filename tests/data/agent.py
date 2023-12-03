@@ -139,3 +139,15 @@ plan_to_do_tasks = [
         id="sum a + b",
     ),
 ]
+
+to_do_tasks = [
+    pytest.param(
+        ".agent_cache/tolatolatop/devbot@master@15",
+        "新增一个fastapi接口, 返回 a + b 的值",
+        """
+- [ ] MODIFY devbot/devbot.py  # Add a new FastAPI endpoint for summing numbers
+""",
+        plan_to_do_task_info,
+        id="sum a + b",
+    ),
+]
