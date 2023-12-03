@@ -1,16 +1,16 @@
-from devbot.agent.base import DevAgent
-from devbot.agent.tools import GitToolkit
-
-
+import os
 import github
 from git import Repo
+
+
 from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 
-
-import os
+from devbot.agent.base import DevAgent
+from devbot.agent.tools import GitToolkit
+from devbot.agent import toolkit
 
 
 class IssueAgent(DevAgent):
@@ -101,7 +101,7 @@ class IssueAgent(DevAgent):
 
 class CodingAgent(IssueAgent):
     def _get_tools(self):
-        return []
+        return [toolkit.InfoPlanTool(root_dir=self.code_dir)]
 
     def _get_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
@@ -115,6 +115,7 @@ You are a very good programming expert. Please follow the process below to resol
 3. Use ToDoPlan to generate a coding plan based on the user's needs.
 4. Complete the ToDo according to the user's needs.
 Stop waiting for user instructions when completing each process.
+Return results using Checklist.
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),

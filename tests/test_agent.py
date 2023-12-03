@@ -61,7 +61,6 @@ def test_tasks(issue_agent, get_memory, expected):
     assert expected in resp
 
 
-@pytest.mark.xfail(run=False, reason="has bug")
 @pytest.mark.parametrize(("get_memory", "expected"), coding_tasks)
 def test_coding_tasks(coding_agent, get_memory, expected):
     agent = coding_agent
@@ -118,12 +117,3 @@ def test_to_do_tasks(code_dir, task, plan, task_info):
     agent = agent_tool.ToDoAgent(code_dir, task, plan, task_info)
     resp = agent.run()
     assert "devbot/devbot.py" in resp
-
-
-@pytest.mark.skip("no test")
-@pytest.mark.parametrize(("get_memory", "expected"), memory_tasks)
-def test_tasks(issue_agent, get_memory, expected):
-    agent = issue_agent
-    agent._get_memory = get_memory
-    resp = agent.run()
-    assert expected in resp

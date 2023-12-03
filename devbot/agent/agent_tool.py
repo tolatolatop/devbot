@@ -112,20 +112,11 @@ class PlanQueryAgent(PlanAgent):
                     "system",
                     """
 You are very powerful coding assistant.Collect relevant information as required.Develop a plan for collecting information based on the user's tasks.
-You can only use the READ keywords to develop your plan.No need to output redundant information and make sure there are as few steps as possible
+You can only use the READ keywords to develop your plan. Your plan contains up to 5 checklists.
 
 Correct Example:
 - [ ] READ README.rst  # Understand project goals
 - [ ] READ main.py  # View files to be modified
-
-Error Example:
-1. Understand the project goals: 
-- [ ] READ README.rst # Understand project goals 
-2. View the files in the project to identify where the FastAPI code needs to be added: 
-- [ ] READ main.py # View files to be modified
-
-The wrong use case has the following errors
-1. Use numerical serial numbers to express task content
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),

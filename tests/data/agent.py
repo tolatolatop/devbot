@@ -40,14 +40,7 @@ memory_tasks = [
 ]
 
 update_env_var_to_readme = [
-    HumanMessage(
-        content="""
-1.读取项目中.env.template文件
-2.根据读取到的内容进行总结
-3.将总结的内容以表格形式增加到到项目README.rst，注意再写入前先读取README.rst的内容
-4.最后读取最终README.rst内容并返回
-"""
-    ),
+    HumanMessage(content="README.rst中缺少项目环境变量描述，请根据仓库内容添加信息"),
 ]
 
 coding_tasks = [
