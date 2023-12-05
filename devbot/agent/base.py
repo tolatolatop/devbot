@@ -12,7 +12,7 @@ from langchain.tools import tool
 from langchain.tools.base import BaseTool
 
 
-class DevAgent(abc.ABC):
+class SimpleAgent(abc.ABC):
     @property
     @abc.abstractmethod
     def name(self) -> str:
@@ -23,15 +23,44 @@ class DevAgent(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def _get_tools(self) -> List[BaseTool]:
-        pass
-
-    @abc.abstractmethod
     def _get_prompt(self) -> ChatPromptTemplate:
         pass
 
     @abc.abstractmethod
     def _get_chat_model(self) -> BaseChatModel:
+        pass
+
+    def _get_inputs(self) -> Tuple[str, Dict[str, Callable]]:
+        memory = self._get_memory()
+        chat_history = memory[:-1]
+        input = memory[-1]
+        data = {
+            "input": lambda x: x["input"],
+            "chat_history": lambda x: x.get("chat_history") or chat_history,
+        }
+        return input, data
+
+    def _run(self) -> str:
+        llm = self._get_chat_model()
+
+        input, inputs = self._get_inputs()
+
+        use_prompt = self._get_prompt()
+        agent = (
+            inputs | use_prompt | llm | OpenAIFunctionsAgentOutputParser()
+        ).with_config(run_name=self.name)
+
+        agent_executor = AgentExecutor(agent=agent, tools=[], handle_parsing_errors=True)  # type: ignore
+        resp = agent_executor.invoke({"input": input.content})  # type: ignore
+        return resp["output"]
+
+    def run(self) -> str:
+        return self._run()
+
+
+class DevAgent(SimpleAgent):
+    @abc.abstractmethod
+    def _get_tools(self) -> List[BaseTool]:
         pass
 
     def _get_inputs(self) -> Tuple[str, Dict[str, Callable]]:
@@ -68,8 +97,3 @@ class DevAgent(abc.ABC):
         agent_executor = AgentExecutor(agent=agent, tools=tools, handle_parsing_errors=True)  # type: ignore
         resp = agent_executor.invoke({"input": input.content})  # type: ignore
         return resp["output"]
-
-    def run(self) -> str:
-        return self._run()
-
-    # TODO: Add aiofiles method

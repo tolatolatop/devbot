@@ -8,7 +8,7 @@ import pytest
 from dotenv import load_dotenv
 import github
 
-from devbot.agent.coding import CodingAgent, PlanAgent
+from devbot.agent.coding import CodingAgent, PlanAgent, ChecklistAgent
 from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool, InfoPlanTool
 from devbot.agent import agent_tool
@@ -55,6 +55,12 @@ def plan_agent(git_server):
 
 
 @pytest.fixture
+def checklist_agent(git_server):
+    agent = ChecklistAgent()
+    return agent
+
+
+@pytest.fixture
 def code_dir(issue_agent):
     code_dir = issue_agent.prepare_env(
         read_file[0]["repo_url"],
@@ -71,6 +77,7 @@ def test_tasks(issue_agent, get_memory, expected):
     assert expected in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), tasks.coding_tasks)
 def test_coding_tasks(coding_agent, get_memory, expected):
     agent = coding_agent
@@ -86,6 +93,17 @@ def test_coding_plan_tasks(plan_agent, get_memory, expected):
     agent._get_memory = get_memory
     resp = agent.run()
     assert expected in resp
+
+
+@pytest.mark.parametrize(
+    ("get_memory", "expected"), tasks.checklist_agent_tasks
+)
+def test_task_agent(checklist_agent, get_memory, expected):
+    agent = checklist_agent
+    agent._get_memory = get_memory
+    resp = agent.run()
+    assert resp.startswith("Checklist:")
+    assert expected == resp.count("- [ ]")
 
 
 @pytest.mark.skip("no test")

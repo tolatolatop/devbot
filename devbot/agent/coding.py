@@ -1,14 +1,16 @@
 import os
+from typing import Callable, Dict, Tuple
 import github
 from git import Repo
 
-
+from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
+from langchain.tools.render import format_tool_to_openai_function
 
-from devbot.agent.base import DevAgent
+from devbot.agent.base import DevAgent, SimpleAgent
 from devbot.agent.tools import GitToolkit
 from devbot.agent import toolkit
 
@@ -170,3 +172,36 @@ ToDo:
             ]
         )
         return prompt
+
+
+class ChecklistAgent(SimpleAgent):
+    @property
+    def name(self):
+        return "Checklist"
+
+    def _get_memory(self):
+        chat_history = []
+        return chat_history
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+There is a Checklist table here. The Checklist table is updated based on the user's answers. You need to return it in the original format.
+Checklist:
+- [x] Say Hello
+- [ ] Calculate
+- [ ] Choice One Word
+- [ ] Say Goodbay
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+            ]
+        )
+        return prompt
+
+    def _get_chat_model(self):
+        return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)

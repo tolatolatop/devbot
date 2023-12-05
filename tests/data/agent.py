@@ -69,6 +69,69 @@ ToDo:
 """
     ),
     HumanMessage(content="完成ToDo Checklist"),
+    AIMessage(
+        content="""
+Here is the updated ToDo checklist:
+
+- [x] Modify the README.rst file to include the following project environment variable descriptions:
+  - LANGCHAIN_TRACING_V2=true
+  - LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
+  - LANGCHAIN_API_KEY=<your-api-key>
+  - LANGCHAIN_PROJECT=<your-project> (defaults to "default" if not specified)
+  - OPENAI_API_KEY=<your-openai-api-key>
+  - SMEE_SOURCE=https://smee.io/new
+  - SMEE_TARGET=http://devbot:8000/webhook/github
+"""
+    ),
+]
+
+checklist_chat_history = [
+    SystemMessage(
+        content="""
+Checklist:
+- [x] Say Hello
+- [ ] Calculate
+- [ ] Choice One Word
+- [ ] Say Goodbay
+"""
+    ),
+    AIMessage(
+        content="""
+FINISHED: Calculate
+"""
+    ),
+]
+
+checklist_agent_tasks = [
+    pytest.param(
+        mock.Mock(
+            return_value=checklist_chat_history + [HumanMessage(content="通过")]
+        ),
+        2,
+        id="ok",
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=checklist_chat_history
+            + [HumanMessage(content="重新检查一下")]
+        ),
+        3,
+        id="recheck",
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=checklist_chat_history + [HumanMessage(content="不行")]
+        ),
+        3,
+        id="redo",
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=checklist_chat_history + [HumanMessage(content="下一步")]
+        ),
+        2,
+        id="next",
+    ),
 ]
 
 coding_plan_tasks = [
