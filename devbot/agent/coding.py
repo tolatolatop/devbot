@@ -189,12 +189,8 @@ class ChecklistAgent(SimpleAgent):
                 (
                     "system",
                     """
-There is a Checklist table here. The Checklist table is updated based on the user's answers. You need to return it in the original format.
-Checklist:
-- [x] Say Hello
-- [ ] Calculate
-- [ ] Choice One Word
-- [ ] Say Goodbay
+There is a Checklist table here. The Checklist table is updated based on the user's answers. You need to return it in the original format.`
+If the checklist has been completed, returns that "all tasks have been completed"
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),

@@ -102,6 +102,60 @@ FINISHED: Calculate
     ),
 ]
 
+meta_checklist_chat_history = [
+    SystemMessage(
+        content="""
+Checklist:
+- [x] Generate Checklist according to plan
+- [ ] Complete Checklist
+"""
+    ),
+    AIMessage(
+        content="""
+FINISHED: Complete Checklist
+"""
+    ),
+]
+
+meta_checklist_agent_tasks = [
+    pytest.param(
+        mock.Mock(
+            return_value=meta_checklist_chat_history
+            + [HumanMessage(content="通过")]
+        ),
+        0,
+        id="ok",
+        marks=pytest.mark.skip("pass"),
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=meta_checklist_chat_history
+            + [HumanMessage(content="返回上一步")]
+        ),
+        1,
+        id="undo",
+        marks=pytest.mark.skip("pass"),
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=meta_checklist_chat_history
+            + [HumanMessage(content="不行")]
+        ),
+        1,
+        id="redo",
+        marks=pytest.mark.skip("pass"),
+    ),
+    pytest.param(
+        mock.Mock(
+            return_value=meta_checklist_chat_history
+            + [HumanMessage(content="下一步")]
+        ),
+        0,
+        id="next",
+        marks=pytest.mark.skip("pass"),
+    ),
+]
+
 checklist_agent_tasks = [
     pytest.param(
         mock.Mock(

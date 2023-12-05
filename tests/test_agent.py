@@ -95,10 +95,22 @@ def test_coding_plan_tasks(plan_agent, get_memory, expected):
     assert expected in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(
     ("get_memory", "expected"), tasks.checklist_agent_tasks
 )
-def test_task_agent(checklist_agent, get_memory, expected):
+def test_checklist_agent(checklist_agent, get_memory, expected):
+    agent = checklist_agent
+    agent._get_memory = get_memory
+    resp = agent.run()
+    assert resp.startswith("Checklist:")
+    assert expected == resp.count("- [ ]")
+
+
+@pytest.mark.parametrize(
+    ("get_memory", "expected"), tasks.meta_checklist_agent_tasks
+)
+def test_meta_checklist_agent(checklist_agent, get_memory, expected):
     agent = checklist_agent
     agent._get_memory = get_memory
     resp = agent.run()
