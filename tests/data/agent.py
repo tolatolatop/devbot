@@ -245,9 +245,7 @@ write_tasks = [
 ]
 
 plan_tasks = [
-    pytest.param(
-        "新增一个fastapi接口, 返回 a + b的值",
-    ),
+    pytest.param("新增一个fastapi接口, 返回 a + b的值", id="add sum api"),
 ]
 
 do_plan_tasks = [

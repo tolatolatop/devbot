@@ -10,9 +10,10 @@ import github
 
 from devbot.agent.coding import CodingAgent, PlanAgent
 from devbot.agent.coding import IssueAgent
-from devbot.agent.toolkit import WriteFileTool, InfoPlanTool
+from devbot.agent.toolkit import WriteFileTool
 from devbot.agent import agent_tool
 from devbot.agent.checklist import MetaChecklistAgent, FormattedChecklistAgent
+from devbot.agent.checklist import GenChecklistAgent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -108,6 +109,7 @@ def test_checklist_agent(meta_checklist_agent, get_memory, expected):
     assert expected == resp.count("- [ ]")
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("plan", "task_number"), tasks.task_plan)
 def test_formatted_checklist_agent(plan, task_number):
     agent = FormattedChecklistAgent(plan)
@@ -142,15 +144,10 @@ def test_write_tasks(code_dir, file_path, text, task):
     assert "README.rst" in resp
 
 
-@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task",), tasks.plan_tasks)
 def test_plan_tasks(code_dir, task):
-    tool = InfoPlanTool(root_dir=code_dir)
-    resp = tool.run(
-        {
-            "task": task,
-        }
-    )
+    gc_agent = GenChecklistAgent(code_dir=code_dir, task=task)
+    resp = gc_agent.run()
     assert "- [ ] READ" in resp
 
 
