@@ -8,10 +8,11 @@ import pytest
 from dotenv import load_dotenv
 import github
 
-from devbot.agent.coding import CodingAgent, PlanAgent, ChecklistAgent
+from devbot.agent.coding import CodingAgent, PlanAgent
 from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool, InfoPlanTool
 from devbot.agent import agent_tool
+from devbot.agent.checklist import MetaChecklistAgent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -56,7 +57,7 @@ def plan_agent(git_server):
 
 @pytest.fixture
 def checklist_agent(git_server):
-    agent = ChecklistAgent()
+    agent = MetaChecklistAgent()
     return agent
 
 
