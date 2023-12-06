@@ -13,7 +13,7 @@ from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool
 from devbot.agent import agent_tool
 from devbot.agent.checklist import MetaChecklistAgent, FormattedChecklistAgent
-from devbot.agent.checklist import GenChecklistAgent
+from devbot.agent.checklist import GenChecklistAgent, DoChecklistAgent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -144,6 +144,16 @@ def test_write_tasks(code_dir, file_path, text, task):
     assert "README.rst" in resp
 
 
+@pytest.mark.parametrize(("task", "checklist"), tasks.do_checklist_agent_tasks)
+def test_do_checklist_tasks(code_dir, task, checklist):
+    gc_agent = DoChecklistAgent(
+        code_dir=code_dir, task=task, checklist=checklist
+    )
+    resp = gc_agent.run()
+    assert "main" in resp
+
+
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task",), tasks.plan_tasks)
 def test_plan_tasks(code_dir, task):
     gc_agent = GenChecklistAgent(code_dir=code_dir, task=task)

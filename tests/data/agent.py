@@ -248,6 +248,20 @@ plan_tasks = [
     pytest.param("新增一个fastapi接口, 返回 a + b的值", id="add sum api"),
 ]
 
+do_checklist_agent_tasks = [
+    pytest.param(
+        "新增一个fastapi接口, 返回 a + b的值",
+        """
+Checklist:
+- [ ] READ devbot/cli.py  # Check for existing FastAPI interface
+- [ ] READ devbot/devbot.py  # Check where FastAPI interface should be added
+- [ ] READ devbot/agent/core.py  # Understand how `a` and `b` values are obtained
+- [ ] READ devbot/agent/prompts.py  # Check for prompts or validations for `a` and `b` values
+""",
+        id="add sum api",
+    ),
+]
+
 do_plan_tasks = [
     pytest.param(
         "新增一个fastapi接口, 返回 a + b 的值",

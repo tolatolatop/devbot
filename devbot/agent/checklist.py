@@ -1,9 +1,10 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
+from langchain.agents.agent_toolkits import FileManagementToolkit
 
 from devbot.agent.tools import GitToolkit
-from devbot.agent.base import SimpleAgent
+from devbot.agent.base import SimpleAgent, DevAgent
 
 
 class ProjectAgent(SimpleAgent):
@@ -61,8 +62,45 @@ Example:
         return plan
 
 
-class DoChecklistAgent:
-    pass
+class DoChecklistAgent(DevAgent, ProjectAgent):
+    def __init__(self, code_dir, task: str, checklist: str) -> None:
+        super().__init__(code_dir=code_dir, task=task)
+        self.checklist = checklist
+
+    @property
+    def name(self):
+        return "DoChecklist"
+
+    def _get_memory(self):
+        chat_history = [
+            HumanMessage(
+                content=f"Original Task: {self.task}\n{self.checklist}"
+            ),
+        ]
+        return chat_history
+
+    def _get_tools(self):
+        tools = FileManagementToolkit(
+            root_dir=str(self.code_dir),
+            selected_tools=["read_file", "write_file"],
+        ).get_tools()
+        return tools
+
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+Complete the first to-be-completed task on the checklist. And summarize what you did based on the original task.
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
 
 
 class FormattedChecklistAgent(SimpleAgent):
