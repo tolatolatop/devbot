@@ -12,7 +12,7 @@ from devbot.agent.coding import CodingAgent, PlanAgent
 from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool
 from devbot.agent import agent_tool
-from devbot.agent.checklist import MetaChecklistAgent, FormattedChecklistAgent
+from devbot.agent.checklist import ReviewAgent, FormattedChecklistAgent
 from devbot.agent.checklist import GenChecklistAgent, DoChecklistAgent
 from devbot.agent import checklist as ck_agent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
@@ -107,7 +107,7 @@ def test_formatted_checklist_agent(plan, task_number):
     tasks.meta_checklist_agent_tasks,
 )
 def test_meta_checklist_agent(checklist, result, user_review, expected):
-    agent = MetaChecklistAgent(checklist, result, user_review)
+    agent = ReviewAgent(checklist, result, user_review)
     resp = agent.run()
     assert resp.startswith("Checklist:")
     assert expected == resp.count("- [ ]")

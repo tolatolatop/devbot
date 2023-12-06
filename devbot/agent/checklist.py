@@ -1,8 +1,16 @@
 import re
+from typing import Optional, Type
+
+from langchain.callbacks.manager import CallbackManagerForToolRun
+from langchain.pydantic_v1 import BaseModel, Field
+from langchain.tools import BaseTool
+from langchain.tools.base import BaseTool
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 from langchain.agents.agent_toolkits import FileManagementToolkit
+from langchain.tools.file_management.utils import BaseFileToolMixin
+
 
 from devbot.agent.tools import GitToolkit
 from devbot.agent.base import SimpleAgent, DevAgent
@@ -200,7 +208,7 @@ Checklist:
         return prompt
 
 
-class MetaChecklistAgent(SimpleAgent):
+class ReviewAgent(SimpleAgent):
     def __init__(
         self, checklist: str, result: str, user_review: str, do_all=False
     ) -> None:
