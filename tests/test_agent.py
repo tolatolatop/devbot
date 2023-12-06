@@ -12,7 +12,7 @@ from devbot.agent.coding import CodingAgent, PlanAgent
 from devbot.agent.coding import IssueAgent
 from devbot.agent.toolkit import WriteFileTool, InfoPlanTool
 from devbot.agent import agent_tool
-from devbot.agent.checklist import MetaChecklistAgent
+from devbot.agent.checklist import MetaChecklistAgent, FormattedChecklistAgent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -56,7 +56,7 @@ def plan_agent(git_server):
 
 
 @pytest.fixture
-def checklist_agent(git_server):
+def meta_checklist_agent(git_server):
     agent = MetaChecklistAgent()
     return agent
 
@@ -100,19 +100,28 @@ def test_coding_plan_tasks(plan_agent, get_memory, expected):
 @pytest.mark.parametrize(
     ("get_memory", "expected"), tasks.checklist_agent_tasks
 )
-def test_checklist_agent(checklist_agent, get_memory, expected):
-    agent = checklist_agent
+def test_checklist_agent(meta_checklist_agent, get_memory, expected):
+    agent = meta_checklist_agent
     agent._get_memory = get_memory
     resp = agent.run()
     assert resp.startswith("Checklist:")
     assert expected == resp.count("- [ ]")
 
 
+@pytest.mark.parametrize(("plan", "task_number"), tasks.task_plan)
+def test_formatted_checklist_agent(plan, task_number):
+    agent = FormattedChecklistAgent(plan)
+    resp = agent.run()
+    assert resp.startswith("Checklist:")
+    assert task_number == resp.count("- [ ]")
+
+
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(
     ("get_memory", "expected"), tasks.meta_checklist_agent_tasks
 )
-def test_meta_checklist_agent(checklist_agent, get_memory, expected):
-    agent = checklist_agent
+def test_meta_checklist_agent(meta_checklist_agent, get_memory, expected):
+    agent = meta_checklist_agent
     agent._get_memory = get_memory
     resp = agent.run()
     assert resp.startswith("Checklist:")

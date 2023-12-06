@@ -156,6 +156,16 @@ meta_checklist_agent_tasks = [
     ),
 ]
 
+task_plan = [
+    pytest.param(
+        """
+1. Modify the README.rst file to include project environment variable descriptions
+""",
+        1,
+        id="one readme",
+    ),
+]
+
 checklist_agent_tasks = [
     pytest.param(
         mock.Mock(
