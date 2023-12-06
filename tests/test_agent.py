@@ -14,6 +14,7 @@ from devbot.agent.toolkit import WriteFileTool
 from devbot.agent import agent_tool
 from devbot.agent.checklist import MetaChecklistAgent, FormattedChecklistAgent
 from devbot.agent.checklist import GenChecklistAgent, DoChecklistAgent
+from devbot.agent import checklist as ck_agent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -134,6 +135,16 @@ def test_do_checklist_tasks(code_dir, task, checklist):
     )
     resp = gc_agent.run()
     assert "main" in resp
+
+
+@pytest.mark.skip("ok")
+@pytest.mark.parametrize(("task", "checklist"), tasks.do_checklist_agent_tasks)
+def test_do_all_checklist_tasks(code_dir, task, checklist):
+    gc_agent = ck_agent.DoAllChecklistAgent(
+        code_dir=code_dir, task=task, checklist=checklist
+    )
+    resp = gc_agent.run()
+    assert "devbot" in resp
 
 
 @pytest.mark.skip("no test")

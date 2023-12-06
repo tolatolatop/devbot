@@ -104,6 +104,24 @@ Complete the first to-be-completed task on the checklist. And summarize what you
         return prompt
 
 
+class DoAllChecklistAgent(DoChecklistAgent):
+    def _get_prompt(self):
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """
+Complete all tasks on the checklist. And summarize what you did based on the original task.
+""",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("user", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
+        return prompt
+
+
 class FormattedChecklistAgent(SimpleAgent):
     def __init__(self, plan: str) -> None:
         super().__init__()
