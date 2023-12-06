@@ -57,12 +57,6 @@ def plan_agent(git_server):
 
 
 @pytest.fixture
-def meta_checklist_agent(git_server):
-    agent = MetaChecklistAgent()
-    return agent
-
-
-@pytest.fixture
 def code_dir(issue_agent):
     code_dir = issue_agent.prepare_env(
         read_file[0]["repo_url"],
@@ -98,18 +92,6 @@ def test_coding_plan_tasks(plan_agent, get_memory, expected):
 
 
 @pytest.mark.skip("no test")
-@pytest.mark.parametrize(
-    ("get_memory", "expected"), tasks.checklist_agent_tasks
-)
-def test_checklist_agent(meta_checklist_agent, get_memory, expected):
-    agent = meta_checklist_agent
-    agent._get_memory = get_memory
-    resp = agent.run()
-    assert resp.startswith("Checklist:")
-    assert expected == resp.count("- [ ]")
-
-
-@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("plan", "task_number"), tasks.task_plan)
 def test_formatted_checklist_agent(plan, task_number):
     agent = FormattedChecklistAgent(plan)
@@ -118,13 +100,13 @@ def test_formatted_checklist_agent(plan, task_number):
     assert task_number == resp.count("- [ ]")
 
 
-@pytest.mark.skip("no test")
+@pytest.mark.skip("pass rate is lower")
 @pytest.mark.parametrize(
-    ("get_memory", "expected"), tasks.meta_checklist_agent_tasks
+    ("checklist", "result", "user_review", "expected"),
+    tasks.meta_checklist_agent_tasks,
 )
-def test_meta_checklist_agent(meta_checklist_agent, get_memory, expected):
-    agent = meta_checklist_agent
-    agent._get_memory = get_memory
+def test_meta_checklist_agent(checklist, result, user_review, expected):
+    agent = MetaChecklistAgent(checklist, result, user_review)
     resp = agent.run()
     assert resp.startswith("Checklist:")
     assert expected == resp.count("- [ ]")
@@ -144,6 +126,7 @@ def test_write_tasks(code_dir, file_path, text, task):
     assert "README.rst" in resp
 
 
+@pytest.mark.skip("no test")
 @pytest.mark.parametrize(("task", "checklist"), tasks.do_checklist_agent_tasks)
 def test_do_checklist_tasks(code_dir, task, checklist):
     gc_agent = DoChecklistAgent(

@@ -1,3 +1,4 @@
+import re
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
@@ -182,29 +183,52 @@ Checklist:
 
 
 class MetaChecklistAgent(SimpleAgent):
+    def __init__(
+        self, checklist: str, result: str, user_review: str, do_all=False
+    ) -> None:
+        super().__init__()
+        self.checklist = checklist
+        self.user_review = user_review
+        self.result = result
+        self.do_all = do_all
+
     @property
     def name(self):
-        return "Checklist"
+        return "UpdateChecklist"
 
     def _get_memory(self):
-        chat_history = []
+        chat_history = [
+            AIMessage(content=f"{self.result}"),
+            HumanMessage(content=f"{self.user_review}"),
+            SystemMessage(
+                content="""Guess whether the user's reply similar the following intentions:
+Can continue the mission or current work is completed
+
+You just need to answer Y/N
+"""
+            ),
+        ]
         return chat_history
 
     def _get_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
             [
-                (
-                    "system",
-                    """
-There is a Checklist table here. The Checklist table is updated based on the user's answers. You need to return it in the original format.`
-If the checklist has been completed, returns that "all tasks have been completed"
-""",
-                ),
                 MessagesPlaceholder(variable_name="chat_history"),
-                ("user", "{input}"),
+                ("system", "{input}"),
             ]
         )
         return prompt
 
     def _get_chat_model(self):
         return ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+
+    def run(self) -> str:
+        resp = super().run()
+        update_checklist = self.checklist
+        if resp.upper() == "Y":
+            if self.do_all:
+                return re.sub(r"- \[ \]", "- [x]", update_checklist)
+            else:
+                return re.sub(r"\[ \]", "[x]", update_checklist, count=1)
+
+        return update_checklist

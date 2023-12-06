@@ -103,56 +103,45 @@ FINISHED: Calculate
 ]
 
 meta_checklist_chat_history = [
-    SystemMessage(
-        content="""
-Checklist:
-- [x] Generate Checklist according to plan
-- [ ] Complete Checklist
-"""
-    ),
-    AIMessage(
-        content="""
-FINISHED: Complete Checklist
-"""
-    ),
+    """Checklist:
+- [ ] READ devbot/cli.py  # Check for existing FastAPI interface
+- [ ] READ devbot/devbot.py  # Check where FastAPI interface should be added
+- [ ] READ devbot/agent/core.py  # Understand how `a` and `b` values are obtained
+- [ ] READ devbot/agent/prompts.py  # Check for prompts or validations for `a` and `b` values
+""",
+    "FINISHED: I have read the `devbot/cli.py` file."
+    " It is a console script for devbot. It defines a `main` function that"
+    " parses command line arguments and prints them.",
 ]
 
 meta_checklist_agent_tasks = [
     pytest.param(
-        mock.Mock(
-            return_value=meta_checklist_chat_history
-            + [HumanMessage(content="通过")]
-        ),
-        0,
+        meta_checklist_chat_history[0],
+        meta_checklist_chat_history[1],
+        "通过",
+        3,
         id="ok",
-        marks=pytest.mark.skip("pass"),
     ),
     pytest.param(
-        mock.Mock(
-            return_value=meta_checklist_chat_history
-            + [HumanMessage(content="返回上一步")]
-        ),
-        1,
+        meta_checklist_chat_history[0],
+        meta_checklist_chat_history[1],
+        "不通过重做",
+        4,
         id="undo",
-        marks=pytest.mark.skip("pass"),
     ),
     pytest.param(
-        mock.Mock(
-            return_value=meta_checklist_chat_history
-            + [HumanMessage(content="不行")]
-        ),
-        1,
+        meta_checklist_chat_history[0],
+        meta_checklist_chat_history[1],
+        "结果不符合要求",
+        4,
         id="redo",
-        marks=pytest.mark.skip("pass"),
     ),
     pytest.param(
-        mock.Mock(
-            return_value=meta_checklist_chat_history
-            + [HumanMessage(content="下一步")]
-        ),
-        0,
+        meta_checklist_chat_history[0],
+        meta_checklist_chat_history[1],
+        "继续",
+        3,
         id="next",
-        marks=pytest.mark.skip("pass"),
     ),
 ]
 
