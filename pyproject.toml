@@ -19,6 +19,7 @@ beautifulsoup4 = "^4.12.2"
 html2text = "^2020.1.16"
 unstructured = "^0.11.0"
 pygitee = {git = "https://github.com/tolatolatop/pygitee.git"}
+redis = "^5.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
