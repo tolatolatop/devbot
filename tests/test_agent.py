@@ -15,6 +15,7 @@ from devbot.agent import agent_tool
 from devbot.agent.checklist import ReviewAgent, FormattedChecklistAgent
 from devbot.agent.checklist import GenChecklistAgent, DoChecklistAgent
 from devbot.agent import checklist as ck_agent
+from devbot.agent import team as team_agent
 from .data.agent import read_file, memory_tasks, coding_tasks, write_tasks
 from .data import agent as tasks
 
@@ -34,6 +35,12 @@ def issue_agent(git_server):
         read_file[0]["repo_url"],
         read_file[0]["issue_number"],
     )
+    return agent
+
+
+@pytest.fixture
+def team_issue_agent(code_dir):
+    agent = team_agent.IssueAgent(code_dir=code_dir)
     return agent
 
 
@@ -83,12 +90,19 @@ def test_coding_tasks(coding_agent, get_memory, expected):
     assert expected in resp
 
 
+@pytest.mark.parametrize(("task"), tasks.team_tasks)
+def test_team_agent_tasks(team_issue_agent, task):
+    resp = team_issue_agent.run({"input": task})
+    assert "README" in resp
+
+
+@pytest.mark.skip("no pass")
 @pytest.mark.parametrize(("task"), tasks.plan_tasks)
 def test_coding_checklist_tasks(code_dir, task):
-    # research_checklist = ck_agent.GenChecklistAgent(code_dir, task).run()
-    # research_info = ck_agent.DoAllChecklistAgent(
-    #     code_dir, task, research_checklist
-    # ).run()
+    research_checklist = ck_agent.GenChecklistAgent(code_dir, task).run()
+    research_info = ck_agent.DoAllChecklistAgent(
+        code_dir, task, research_checklist
+    ).run()
     research_info = """
 Based on the contents of the `src/main.rs` file, the `sum` interface does not exist. Therefore, we can proceed with adding the `sum` interface.
 

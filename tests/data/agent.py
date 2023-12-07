@@ -241,6 +241,10 @@ plan_tasks = [
     pytest.param("新增一个sum接口, 返回 a + b的值", id="add sum api"),
 ]
 
+team_tasks = [
+    pytest.param("当前仓库中是否存在README文件", id="query"),
+]
+
 do_checklist_agent_tasks = [
     pytest.param(
         "新增一个fastapi接口, 返回 a + b的值",
