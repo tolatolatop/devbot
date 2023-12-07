@@ -57,10 +57,7 @@ class WriteReactParser(ReActSingleInputOutputParser):
         return "react-single-input"
 
 
-class ReactAgentFactory:
-    def write_agent(self, code_dir: str):
-        prompt = """
-Answer the following questions as best you can. You have access to the following tools:
+write_prompt = """Answer the following questions as best you can. You have access to the following tools:
 
 {tools}
 
@@ -82,7 +79,12 @@ Begin!
 
 Question: {input}
 Thought:{agent_scratchpad}
-    """
+"""
+
+
+class ReactAgentFactory:
+    def write_agent(self, code_dir: str):
+        prompt = write_prompt
         prompt = ChatPromptTemplate.from_template(prompt)
         tools = FileManagementToolkit(
             root_dir=code_dir, selected_tools=["read_file"]
@@ -110,6 +112,3 @@ Thought:{agent_scratchpad}
         )
         agent = AgentExecutor(agent=react, tools=tools)  # type: ignore
         return agent
-        resp = agent.invoke(
-            {"input": "add a sum fn to src/main.rs for add two number"}
-        )
