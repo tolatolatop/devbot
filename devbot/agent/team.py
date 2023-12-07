@@ -72,11 +72,11 @@ class CallerAgent(RoleAgentMixin, DevAgent):
             return_messages=True, output_key="output", input_key="input"
         )
         self._current_question = {}
+        self._phone_book = {}
 
     @property
-    @abc.abstractmethod
     def phone_book(self) -> Dict[str, RoleAgentMixin]:
-        pass
+        return self._phone_book
 
     @property
     def phone_book_str(self) -> str:
@@ -149,10 +149,6 @@ class CoderAgent(ProjectAgent, CallerAgent):
         return "Coder"
 
     @property
-    def phone_book(self) -> Dict[str, CallerAgent]:
-        return {}
-
-    @property
     def role(self) -> str:
         return (
             "Have access to view the code and answer questions about the repos"
@@ -173,9 +169,9 @@ class CoderAgent(ProjectAgent, CallerAgent):
             [
                 (
                     "system",
-                    "You are very powerful coding assistant."
-                    "Please answer the question based on the actual contents of repo."
-                    f"This is a calling list, you can only call the people on it.\n{self.phone_book_str}",
+                    f"""You are very powerful coding assistant."
+Please complete the request from the user.
+This is a calling list, you can only call the people on it.\n{self.phone_book_str}""",
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
                 ("user", "{input}"),
@@ -189,10 +185,6 @@ class IssueAgent(ProjectAgent, CallerAgent):
     @property
     def name(self) -> str:
         return "Issue"
-
-    @property
-    def phone_book(self) -> Dict[str, CallerAgent]:
-        return {"Coder": CoderAgent(code_dir=self.code_dir)}
 
     @property
     def role(self) -> str:

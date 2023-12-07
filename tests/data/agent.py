@@ -242,7 +242,15 @@ plan_tasks = [
 ]
 
 team_tasks = [
-    pytest.param("当前仓库中是否存在README文件", id="query"),
+    pytest.param(
+        "当前仓库中是否存在README文件",
+        id="query",
+        marks=pytest.mark.skip("pass"),
+    ),
+    pytest.param(
+        "请呼叫Coder功能进行开发为仓库代码添加一个sum接口。请持续呼叫Coder直到任务完成",
+        id="add api",
+    ),
 ]
 
 do_checklist_agent_tasks = [

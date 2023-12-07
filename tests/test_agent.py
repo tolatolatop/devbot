@@ -91,8 +91,11 @@ def test_coding_tasks(coding_agent, get_memory, expected):
 
 
 @pytest.mark.parametrize(("task"), tasks.team_tasks)
-def test_team_agent_tasks(team_issue_agent, task):
-    resp = team_issue_agent.run({"input": task})
+def test_team_agent_tasks(code_dir, task):
+    coder = team_agent.CoderAgent(code_dir=code_dir)
+    issue_agent = team_agent.IssueAgent(code_dir=code_dir)
+    issue_agent.phone_book[coder.name] = coder
+    resp = issue_agent.run({"input": task})
     assert "README" in resp
 
 
