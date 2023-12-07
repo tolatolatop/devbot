@@ -7,9 +7,13 @@ from unittest import mock
 
 read_file = [
     {
+        "repo_url": "https://github.com/tolatolatop/rtgitee",
+        "issue_number": 1,
+    },
+    {
         "repo_url": "https://github.com/tolatolatop/devbot",
         "issue_number": 15,
-    }
+    },
 ]
 
 
@@ -234,7 +238,7 @@ write_tasks = [
 ]
 
 plan_tasks = [
-    pytest.param("新增一个fastapi接口, 返回 a + b的值", id="add sum api"),
+    pytest.param("新增一个sum接口, 返回 a + b的值", id="add sum api"),
 ]
 
 do_checklist_agent_tasks = [

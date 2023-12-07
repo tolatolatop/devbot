@@ -10,6 +10,7 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.tools.file_management.utils import BaseFileToolMixin
+from devbot.agent.toolkit import WriteFileTool
 
 
 from devbot.agent.tools import GitToolkit
@@ -38,6 +39,11 @@ class GenChecklistAgent(ProjectAgent):
     def name(self):
         return "GenProjTask"
 
+    def _checklist_info(self):
+        task = """Develop a plan for collecting information based on the user's tasks.
+You only have read access, do not create or modify anything during the plan."""
+        return task
+
     def _get_memory(self):
         chat_history = [
             self._get_project_info(),
@@ -46,13 +52,13 @@ class GenChecklistAgent(ProjectAgent):
         return chat_history
 
     def _get_prompt(self):
+        checklist_info = self._checklist_info()
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    """You are very powerful coding assistant.
-Develop a plan for collecting information based on the user's tasks.
-You only have read access, do not create or modify anything during the plan.
+                    f"""You are very powerful coding assistant.
+{checklist_info}
 The generated plan must be less than 5 steps and can only use the read command and specify the operation object.
 Example:
 1. Modify the README.rst file to include project environment variable descriptions.
@@ -66,8 +72,25 @@ Example:
 
     def run(self) -> str:
         plan = super().run()
-        formatted_agent = FormattedQueryChecklistAgent(plan)
-        plan = formatted_agent.run()
+        # formatted_agent = FormattedQueryChecklistAgent(plan)
+        # plan = formatted_agent.run()
+        return plan
+
+
+class GenCodingChecklistAgent(GenChecklistAgent):
+    @property
+    def name(self):
+        return "GenCodingChecklist"
+
+    def _checklist_info(self):
+        task = """Specify a plan for achieving user needs,
+You need to use create, modify and delete to describe your plan."""
+        return task
+
+    def run(self) -> str:
+        plan = super().run()
+        # formatted_agent = FormattedChecklistAgent(plan)
+        # plan = formatted_agent.run()
         return plan
 
 
@@ -91,7 +114,7 @@ class DoChecklistAgent(DevAgent, ProjectAgent):
     def _get_tools(self):
         tools = FileManagementToolkit(
             root_dir=str(self.code_dir),
-            selected_tools=["read_file", "write_file"],
+            selected_tools=["read_file"],
         ).get_tools()
         return tools
 
@@ -101,7 +124,7 @@ class DoChecklistAgent(DevAgent, ProjectAgent):
                 (
                     "system",
                     """
-Complete the first to-be-completed task on the checklist. And summarize what you did based on the original task.
+Complete the first to-be-completed task on the checklist. Call write_file to write the code that needs to be modified into a file  . And summarize what you did based on the original task.
 """,
                 ),
                 MessagesPlaceholder(variable_name="chat_history"),
@@ -113,6 +136,10 @@ Complete the first to-be-completed task on the checklist. And summarize what you
 
 
 class DoAllChecklistAgent(DoChecklistAgent):
+    @property
+    def name(self):
+        return "DoAllChecklist"
+
     def _get_prompt(self):
         prompt = ChatPromptTemplate.from_messages(
             [

@@ -83,6 +83,30 @@ def test_coding_tasks(coding_agent, get_memory, expected):
     assert expected in resp
 
 
+@pytest.mark.parametrize(("task"), tasks.plan_tasks)
+def test_coding_checklist_tasks(code_dir, task):
+    # research_checklist = ck_agent.GenChecklistAgent(code_dir, task).run()
+    # research_info = ck_agent.DoAllChecklistAgent(
+    #     code_dir, task, research_checklist
+    # ).run()
+    research_info = """
+Based on the contents of the `src/main.rs` file, the `sum` interface does not exist. Therefore, we can proceed with adding the `sum` interface.
+
+To add the `sum` interface, we need to find the appropriate location in the `src/main.rs` file. Let's assume that the `sum` interface should be added after the line `// Your application logic goes here`.
+
+Next, we need to update the documentation in the `README.md` file to include information about the `sum` interface.
+
+Finally, we should delete any temporary files or backups created during the modification process.
+"""
+    coding_checklist = ck_agent.GenCodingChecklistAgent(
+        code_dir, research_info
+    ).run()
+    # finished_task = ck_agent.DoAllChecklistAgent(
+    #     code_dir, task, coding_checklist
+    # ).run()
+    assert "shiajdiaj" in coding_checklist
+
+
 @pytest.mark.skip("no test")
 @pytest.mark.parametrize(("get_memory", "expected"), tasks.coding_plan_tasks)
 def test_coding_plan_tasks(plan_agent, get_memory, expected):
