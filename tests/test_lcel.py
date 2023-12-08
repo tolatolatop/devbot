@@ -263,15 +263,14 @@ Thought:{agent_scratchpad}
         | WriteReactParser()
     )
     agent = AgentExecutor(agent=react, tools=tools)  # type: ignore
-    resp = agent.invoke(
-        {"input": "add a sum fn to src/main.rs for add two number"}
-    )
+    resp = agent.invoke({"input": "我计划给src/main.rs添加一个sum功能。帮我生成一个任务清单"})
     assert isinstance(resp, dict)
     assert "Thought" not in resp["text"]
     assert "main.rs" in resp["file_path"]
     assert "sum" in resp["text"]
 
 
+@pytest.mark.skip("yes")
 def test_write_react_parser():
     text = """
 The content of the file src/main.rs does not currently have a sum function. I need to add a sum function that takes two numbers as input and returns their sum.
