@@ -161,7 +161,7 @@ Thought:{agent_scratchpad}
         llm = llm.bind(stop=["\nObservation"])
         llm_chain = (
             {
-                "tips": lambda x: "",
+                "tips": lambda x: x.get("tips") or "",
                 "input": lambda x: x["input"],
                 "agent_scratchpad": lambda x: format_log_to_str(
                     x["intermediate_steps"]
