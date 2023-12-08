@@ -109,3 +109,4 @@ ENV/
 .agent_cache
 
 *copy.py
+bitbakedev.pem
