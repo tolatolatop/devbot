@@ -173,4 +173,5 @@ Thought:{agent_scratchpad}
             | llm
             | ReActSingleInputOutputParser()
         )
-        return llm_chain
+        agent = AgentExecutor(agent=llm_chain, tools=tools)  # type: ignore
+        return agent
