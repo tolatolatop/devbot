@@ -173,5 +173,17 @@ Thought:{agent_scratchpad}
             | llm
             | ReActSingleInputOutputParser()
         )
-        agent = AgentExecutor(agent=llm_chain, tools=tools)  # type: ignore
+        agent = AgentExecutor(agent=llm_chain, tools=tools, handle_parsing_errors=True)  # type: ignore
         return agent
+
+
+TIPS_GENERATE_COMPILE_GUIDE = """以下文件或目录中可能包含构建指导:
+INSTALL
+README
+build script
+git action
+Makefile
+configure
+./src
+如果找不到构建指导，你可以根据项目目录结构生成
+"""
