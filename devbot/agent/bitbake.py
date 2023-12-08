@@ -60,6 +60,7 @@ class ListTreeTool(BaseGithubToolMixin, BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         try:
+            dir_path = "" if " " in dir_path else dir_path
             contents = self._get_contents(dir_path)
             if not isinstance(contents, List):
                 raise ValueError(f"{dir_path} not a dir")
