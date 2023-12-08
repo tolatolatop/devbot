@@ -154,7 +154,7 @@ Thought:{agent_scratchpad}
     """
         prompt = ChatPromptTemplate.from_template(prompt)
         tools = GitHubToolkit(
-            github=git_server, repo="mirror/busybox", revision=revision
+            github=git_server, repo=repo, revision=revision
         ).get_tools()
 
         llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
