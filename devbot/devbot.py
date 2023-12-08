@@ -4,10 +4,12 @@ import os
 from fastapi import FastAPI, BackgroundTasks
 
 from devbot.repo import github
+from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
 
 from devbot.agent.bitbake import (
     BitbakeAgentFactory,
     TIPS_GENERATE_COMPILE_GUIDE,
+    QUEST_OF_GENERATE_COMPILE_GUIDE,
 )
 
 app = FastAPI()
@@ -41,8 +43,22 @@ def compile_guide(repo_name: str, revision: str = "master"):
     )
     resp = agent.invoke(
         {
-            "input": "获取构建方法并用200字内总结",
+            "input": QUEST_OF_GENERATE_COMPILE_GUIDE,
             "tips": TIPS_GENERATE_COMPILE_GUIDE,
+        }
+    )
+    return resp["output"]
+
+
+@app.get("/imporve_recipe")
+def imporve_recipe(question: str, repo_name: str, revision: str = "master"):
+    git_server = get_git_server()
+    agent = BitbakeAgentFactory().create_repice_agent(
+        git_server, repo_name, revision
+    )
+    resp = agent.invoke(
+        {
+            "input": question,
         }
     )
     return resp["output"]
