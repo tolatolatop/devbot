@@ -1,9 +1,8 @@
 import os
 
-from typing import Optional, List, Type
+from typing import Optional, List, Type, Any
 
 from langchain.agents import AgentType, initialize_agent
-from langchain.agents import Bas
 from langchain.chat_models import ChatOpenAI
 from langchain.utilities.github import GitHubAPIWrapper
 from github import Auth, Github, ContentFile
@@ -15,16 +14,24 @@ from langchain.tools.file_management.list_dir import DirectoryListingInput
 from langchain.tools.file_management.read import ReadFileInput
 
 from github import Github
+from github.Repository import Repository
 
 
 class BaseGithubToolMixin(BaseModel):
-    github: Github
-    repo: str = ""
+    github: Any
+    repo: str
     revision: str = ""
+
+    def _get_repo(self) -> Repository:
+        return self.github.get_repo(self.repo)
+
+    def _get_contents(self, path: str):
+        repo = self._get_repo()
+        return repo.get_contents(path, ref=self.revision)
 
 
 class GitHubToolkit(BaseToolkit):
-    github: Github
+    github: Any
     repo: str
     revision: str = "master"
 
@@ -53,9 +60,7 @@ class ListTreeTool(BaseGithubToolMixin, BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         try:
-            repo_obj = self.github.get_repo(self.repo)
-            dir_path = "" if " " in dir_path else dir_path
-            contents = repo_obj.get_contents(dir_path)
+            contents = self._get_contents(dir_path)
             if not isinstance(contents, List):
                 raise ValueError(f"{dir_path} not a dir")
             # Initialize an empty list to store the file names
@@ -63,7 +68,10 @@ class ListTreeTool(BaseGithubToolMixin, BaseTool):
 
             # Iterate over the contents and add file names to the list
             for content in contents:
-                if content.type == "file":
+                assert isinstance(content, ContentFile.ContentFile)
+                if content.type == "dir":
+                    file_names.append(f"{content.name}/")
+                else:
                     file_names.append(content.name)
             return "\n".join(file_names)
         except Exception as e:
@@ -83,8 +91,7 @@ class ReadFileTool(BaseGithubToolMixin, BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         try:
-            repo_obj = self.github.get_repo(self.repo)
-            file = repo_obj.get_contents(file_path)
+            file = self._get_contents(file_path)
             if not isinstance(file, ContentFile.ContentFile):
                 raise ValueError(f"{file_path} not a file")
             return file.decoded_content.decode("utf-8")
