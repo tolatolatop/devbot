@@ -101,7 +101,7 @@ class ListTreeTool(BaseGithubToolMixin, BaseTool):
                     file_names.append(content.name)
             return "\n".join(file_names)
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: no found {dir_path}"
 
 
 class ReadFileTool(BaseGithubToolMixin, BaseTool):
@@ -122,7 +122,7 @@ class ReadFileTool(BaseGithubToolMixin, BaseTool):
                 raise ValueError(f"{file_path} not a file")
             return file.decoded_content.decode("utf-8")
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: no found {file_path}"
 
 
 class BitbakeAgentFactory:
