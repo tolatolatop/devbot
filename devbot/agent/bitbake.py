@@ -1,6 +1,7 @@
 import os
 
 from typing import Optional, List, Type, Any
+from operator import itemgetter
 
 from langchain.agents import AgentType, initialize_agent
 from langchain.chat_models import ChatOpenAI
@@ -15,21 +16,15 @@ from langchain.tools.file_management.read import ReadFileInput
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.globals import set_verbose
+from langchain.schema.runnable import RunnableLambda
 
 from langchain.tools.render import render_text_description
-from langchain.chat_models import ChatAnthropic
-from langchain.memory.chat_message_histories import RedisChatMessageHistory
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema import AgentAction, AgentFinish, StrOutputParser
-from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
-from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
-from langchain.schema.runnable import RunnableParallel
-from langchain.agents.agent_toolkits import FileManagementToolkit
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_log_to_str
-from langchain.schema import AgentAction, AgentFinish, OutputParserException
+from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
 
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import (
@@ -176,8 +171,59 @@ Thought:{agent_scratchpad}
         agent = AgentExecutor(agent=llm_chain, tools=tools, handle_parsing_errors=True)  # type: ignore
         return agent
 
+    def create_repice_agent(
+        self, git_server: Github, repo: str, revision: str
+    ):
+        prompt = """
+Answer the following questions as best you can.
 
-TIPS_GENERATE_COMPILE_GUIDE = """以下文件或目录中可能包含构建指导:
+ORIGIN FILE CONTENT:
+{content}
+
+COMPILE GUIDE:
+{compile_guide}
+
+Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do
+Final Answer: the final answer to the original input question
+
+Begin!
+
+Question: Improve the content of ORIGIN FILE CONTENT according to COMPILE GUIDE. The content comes from the recipe file written in bitbake language.
+Thought: {agent_scratchpad}
+    """
+        prompt = ChatPromptTemplate.from_template(prompt)
+
+        llm = ChatOpenAI(model="gpt-3.5-turbo-16k", temperature=0)
+        llm = llm.bind(stop=["\nObservation"])
+        compile_guide_agent = self.create_github_agent(
+            git_server, repo, revision
+        )
+        sub_q = {
+            "input": lambda x: QUEST_OF_GENERATE_COMPILE_GUIDE,
+            "tips": lambda x: TIPS_GENERATE_COMPILE_GUIDE,
+        }
+        llm_chain = (
+            {
+                "compile_guide": sub_q
+                | compile_guide_agent
+                | RunnableLambda(lambda x: x["output"]),
+                "content": itemgetter("input"),
+                "agent_scratchpad": lambda x: format_log_to_str(
+                    x["intermediate_steps"]
+                ),
+            }
+            | prompt
+            | llm
+            | ReActSingleInputOutputParser()
+        )
+        agent = AgentExecutor(agent=llm_chain, tools=[], handle_parsing_errors=True)  # type: ignore
+        return agent
+
+
+TIPS_GENERATE_COMPILE_GUIDE = """The following files or directories may contain build instructions:
 INSTALL
 README
 build script
@@ -185,5 +231,9 @@ git action
 Makefile
 configure
 ./src
-如果找不到构建指导，你可以根据项目目录结构生成
 """
+
+QUEST_OF_GENERATE_COMPILE_GUIDE = (
+    "Generate a guide of 300 words or less telling users how to compile and install."
+    "If you can't find any build instructions, you can make up your own mind based on your project structure."
+)

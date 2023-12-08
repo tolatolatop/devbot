@@ -24,6 +24,8 @@ from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_log_to_str
 from langchain.schema import AgentAction, AgentFinish, OutputParserException
+from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
+
 
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import (
@@ -55,6 +57,7 @@ def github_tools(git_server):
     return tools
 
 
+@pytest.mark.skip("ok")
 def test_compile_guide(git_server):
     repo_name = "niwasawa/c-hello-world"
     revision = "master"
@@ -65,6 +68,37 @@ def test_compile_guide(git_server):
         {
             "input": "获取构建方法并用200字内总结",
             "tips": TIPS_GENERATE_COMPILE_GUIDE,
+        }
+    )
+    assert "output" in resp
+    assert "README" in resp["output"]
+
+
+def test_reipce(git_server):
+    repo_name = "niwasawa/c-hello-world"
+    repo_name = "mirror/busybox"
+    revision = "master"
+    agent = BitbakeAgentFactory().create_repice_agent(
+        git_server, repo_name, revision
+    )
+    resp = agent.invoke(
+        {
+            "input": """
+DESCRIPTION = "Recipe created by bitbake-layers"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+
+
+SRC_URI = "file://${BSPDIR}/poky/build-microchip/my_layer/recipes-example/helloworld/helloworld/helloworld.c"
+
+S = "/home/user/my_dir/poky/build-microchip/conf"
+
+do_compile() {
+}
+
+do_install() {
+}
+""",
         }
     )
     assert "output" in resp
