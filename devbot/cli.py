@@ -53,15 +53,38 @@ def _approve(_input: str) -> bool:
 
 def is_shell_command(_input: str) -> bool:
     ret = os.system("which " + _input.split()[0])
-    return ret == 0
+    return ret == 0 or _input == "doit"
 
 
 def run_shell_command(_input: str, cwd: str) -> Dict[str, str]:
+    if _input == "doit":
+        _input = run_do_it(_input)
+    if _input.startswith("wit "):
+        _input = run_write_it(_input)
     p = Popen(
         _input, stdin=PIPE, stderr=STDOUT, stdout=PIPE, shell=True, cwd=cwd
     )
     out, _ = p.communicate()
     return {"input": _input, "output": out.decode()}
+
+
+def run_do_it(_input: str) -> str:
+    todo = os.environ.get("O", "")
+    match = re.search(r"``[^\n]*\n([^`]*)`", _input, re.DOTALL)
+    if todo and match:
+        return match.group(1)
+    else:
+        return "echo 'nothing in $O'"
+
+
+def run_write_it(_input: str) -> str:
+    todo = os.environ.get("O", "")
+    match = re.search(r"``[^\n]*\n([^`]*)`", _input, re.DOTALL)
+    file_path = _input.split(" ")[1]
+    if todo and match and file_path:
+        return f"cat > {file_path} <<EOF\n{match.group(1)}\nEOF"
+    else:
+        return "echo 'nothing in $O'"
 
 
 def run(root_dir):
