@@ -56,8 +56,10 @@ def is_shell_command(_input: str) -> bool:
     return ret == 0
 
 
-def run_shell_command(_input: str) -> Dict[str, str]:
-    p = Popen(_input, stdin=PIPE, stderr=STDOUT, stdout=PIPE, shell=True)
+def run_shell_command(_input: str, cwd: str) -> Dict[str, str]:
+    p = Popen(
+        _input, stdin=PIPE, stderr=STDOUT, stdout=PIPE, shell=True, cwd=cwd
+    )
     out, _ = p.communicate()
     return {"input": _input, "output": out.decode()}
 
@@ -119,7 +121,7 @@ def run(root_dir):
         if quest == "exit":
             return True
         if is_shell_command(quest):
-            resp = run_shell_command(quest)
+            resp = run_shell_command(quest, root_dir)
         else:
             resp = agent.invoke({"input": quest})
         memory.save_context(
