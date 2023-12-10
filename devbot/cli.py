@@ -119,6 +119,7 @@ def run(root_dir):
         memory.save_context(
             {"input": resp["input"]}, {"output": resp["output"]}
         )
+        os.environ["O"] = resp["output"]
 
 
 def main():
