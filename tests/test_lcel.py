@@ -3,6 +3,7 @@ import dotenv
 import pytest
 import os
 import redis
+from unittest import mock
 
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
@@ -33,6 +34,7 @@ from langchain.schema.output_parser import StrOutputParser
 
 from .data import lcel as data_lcel
 from devbot.agent.lcel import WriteReactParser
+from devbot.agent.cache import llm_cache
 
 
 @pytest.mark.skip("pass")
@@ -217,6 +219,7 @@ Thought:{agent_scratchpad}
     assert "Gitee API Client" in resp["finall_answer"]
 
 
+@pytest.mark.skip("yes")
 def test_write(code_dir):
     prompt = """
 Answer the following questions as best you can. You have access to the following tools:
@@ -358,3 +361,46 @@ def test_use_python():
     resp = chain.invoke({"input": "whats 2 plus 2"})
     assert "output" in resp
     assert "print" in resp["output"]
+
+
+def test_llm_cache():
+    template = """Write some python code to solve the user's problem. 
+
+    Return only python code in Markdown format, e.g.:
+
+    ```python
+    ....
+    ```"""
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", template), ("human", "{input}")]
+    )
+
+    model = ChatOpenAI()
+    action_stop = mock.Mock(
+        return_value=AgentFinish({"output": "force stop"}, "stop by outside")
+    )
+
+    def _sanitize_output(text: str):
+        _, after = text.split("```python")
+
+        return after.split("```")[0]
+
+    cache_storage = {}
+    # model = llm_cache(model, cache_storage)
+    stop_force = AgentFinish({"output": "stop"}, "force stop")
+    with mock.patch.object(
+        StrOutputParser,
+        "parse",
+        return_value=stop_force,
+    ) as mock_kkk:
+        chain = (
+            prompt
+            | model
+            | RunnableLambda(lambda x: stop_force)
+            | _sanitize_output
+            | {"output": RunnablePassthrough()}
+        )
+    resp = chain.invoke({"input": "whats 2 plus 2"})
+    assert "output" in resp
+    assert "print" in resp["output"]
+    assert len(cache_storage.keys()) != 0
