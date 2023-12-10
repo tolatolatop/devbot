@@ -19,6 +19,7 @@ from langchain.agents.format_scratchpad import format_log_to_str
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.schema import AgentAction, AgentFinish, OutputParserException
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.memory import ConversationBufferMemory
 
 from langchain.callbacks import HumanApprovalCallbackHandler
 
@@ -62,6 +63,9 @@ def run(root_dir):
             should_check=_should_check, approve=_approve
         )
     ]
+    memory = ConversationBufferMemory(
+        return_messages=True, output_key="output", input_key="input"
+    )
 
     llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
     tools = load_tools(
@@ -70,27 +74,24 @@ def run(root_dir):
         callbacks=callbacks,  # type: ignore
     )
     tool_functions = [format_tool_to_openai_function(t) for t in tools]
-    llm_with_tools = llm.bind(functions=tool_functions)
+    llm = llm.bind(functions=tool_functions)
 
-    chat_history = []
     inputs = {
         "input": lambda x: x["input"],
         "agent_scratchpad": lambda x: format_to_openai_functions(
             x["intermediate_steps"]
         ),
-        "chat_history": lambda x: x.get("chat_history") or chat_history,
+        "chat_history": lambda x: memory.load_memory_variables({}["history"]),
     }
 
-    chain = (
-        inputs | prompt | llm_with_tools | OpenAIFunctionsAgentOutputParser()
-    )
+    chain = inputs | prompt | llm | OpenAIFunctionsAgentOutputParser()
     agent = AgentExecutor(
         agent=chain,  # type: ignore
         tools=tools,
         handle_parsing_errors=True,
         callbacks=callbacks,  # type: ignore
     )
-    FIRST_QUESTION = "Introduce yourself and what you can do"
+    FIRST_QUESTION = "Introduce yourself and what you can do in 100 words."
     resp = agent.invoke({"input": FIRST_QUESTION})
     while True:
         answer = resp["output"]
@@ -99,6 +100,9 @@ def run(root_dir):
         if quest == "exit":
             return True
         resp = agent.invoke({"input": quest})
+        memory.save_context(
+            {"input": resp["input"]}, {"output": resp["output"]}
+        )
 
 
 def main():
