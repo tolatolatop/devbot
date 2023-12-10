@@ -2,7 +2,9 @@
 import argparse
 import sys
 import re
-from typing import Union
+import os
+from typing import Union, Dict
+from subprocess import Popen, PIPE, STDOUT
 
 from langchain.schema import AgentAction, AgentFinish
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
@@ -45,6 +47,17 @@ def _approve(_input: str) -> bool:
     return resp.lower() in ("yes", "y")
 
 
+def is_shell_command(_input: str) -> bool:
+    ret = os.system("which " + _input.split()[0])
+    return ret == 0
+
+
+def run_shell_command(_input: str) -> Dict[str, str]:
+    p = Popen(_input, stdin=PIPE, stderr=STDOUT, stdout=PIPE, shell=True)
+    out, _ = p.communicate()
+    return {"input": _input, "output": out.decode()}
+
+
 def run(root_dir):
     role = """"""
     example = """"""
@@ -81,7 +94,7 @@ def run(root_dir):
         "agent_scratchpad": lambda x: format_to_openai_functions(
             x["intermediate_steps"]
         ),
-        "chat_history": lambda x: memory.load_memory_variables({}["history"]),
+        "chat_history": lambda x: memory.load_memory_variables({})["history"],
     }
 
     chain = inputs | prompt | llm | OpenAIFunctionsAgentOutputParser()
@@ -99,7 +112,10 @@ def run(root_dir):
         quest = input(f"HUMAN:")
         if quest == "exit":
             return True
-        resp = agent.invoke({"input": quest})
+        if is_shell_command(quest):
+            resp = run_shell_command(quest)
+        else:
+            resp = agent.invoke({"input": quest})
         memory.save_context(
             {"input": resp["input"]}, {"output": resp["output"]}
         )
