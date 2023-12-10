@@ -22,6 +22,7 @@ from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.schema import AgentAction, AgentFinish, OutputParserException
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory
+from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 
 from langchain.callbacks import HumanApprovalCallbackHandler
 
@@ -34,15 +35,18 @@ load_dotenv()
 
 
 def _should_check(serialized_obj: dict) -> bool:
+    # Only require approval on ShellTool.
+    tool_name = serialized_obj.get("name")
+    print(f"TOOL: {tool_name} < ", end="")
     return True
 
 
 def _approve(_input: str) -> bool:
     msg = (
+        f"{_input}\n"
         "Do you approve of the following input? "
         "Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no."
     )
-    msg += "\n\n" + _input + "\n"
     resp = input(msg)
     return resp.lower() in ("yes", "y")
 
@@ -60,12 +64,13 @@ def run_shell_command(_input: str) -> Dict[str, str]:
 
 def run(root_dir):
     role = """"""
-    example = """"""
+    example = []
     format = """"""
     eval = ""
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", role),
+            MessagesPlaceholder(variable_name="example"),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -90,6 +95,7 @@ def run(root_dir):
     llm = llm.bind(functions=tool_functions)
 
     inputs = {
+        "example": lambda x: example,
         "input": lambda x: x["input"],
         "agent_scratchpad": lambda x: format_to_openai_functions(
             x["intermediate_steps"]
@@ -104,7 +110,7 @@ def run(root_dir):
         handle_parsing_errors=True,
         callbacks=callbacks,  # type: ignore
     )
-    FIRST_QUESTION = "Introduce yourself and what you can do in 100 words."
+    FIRST_QUESTION = "Introduce yourself and what you can do in one sentence."
     resp = agent.invoke({"input": FIRST_QUESTION})
     while True:
         answer = resp["output"]
