@@ -31,13 +31,10 @@ load_dotenv()
 
 
 def _should_check(serialized_obj: dict) -> bool:
-    # Only require approval on ShellTool.
-    return serialized_obj.get("name") == "llm-math"
+    return True
 
 
 def _approve(_input: str) -> bool:
-    if _input == "echo 'Hello World'":
-        return True
     msg = (
         "Do you approve of the following input? "
         "Anything except 'Y'/'Yes' (case-insensitive) will be treated as a no."
@@ -60,17 +57,21 @@ def run(root_dir):
             MessagesPlaceholder(variable_name="agent_scratchpad"),
         ],
     )
-
-    llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
-    tools = load_tools(["wikipedia", "llm-math"], llm=llm)
-    tool_functions = [format_tool_to_openai_function(t) for t in tools]
-    llm_with_tools = llm.bind(functions=tool_functions)
-
     callbacks = [
         HumanApprovalCallbackHandler(
             should_check=_should_check, approve=_approve
         )
     ]
+
+    llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
+    tools = load_tools(
+        ["wikipedia", "llm-math"],
+        llm=llm,
+        callbacks=callbacks,  # type: ignore
+    )
+    tool_functions = [format_tool_to_openai_function(t) for t in tools]
+    llm_with_tools = llm.bind(functions=tool_functions)
+
     chat_history = []
     inputs = {
         "input": lambda x: x["input"],
